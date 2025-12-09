@@ -1,4 +1,21 @@
+using GymManagementApp.Data;
+using GymManagementApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+//Database connection string
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Add DbContext with SQL Server
+builder.Services.AddDbContext<SporSalonuContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// Add Identity services
+builder.Services.AddIdentity<Uye, IdentityRole>()
+    .AddEntityFrameworkStores<SporSalonuContext>()
+    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -18,6 +35,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
