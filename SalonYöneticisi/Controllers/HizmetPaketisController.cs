@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GymManagementApp.Data;
 using GymManagementApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SalonYöneticisi.Controllers
 {
@@ -44,6 +45,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: HizmetPaketis/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -66,6 +68,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: HizmetPaketis/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -117,6 +120,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: HizmetPaketis/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

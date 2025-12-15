@@ -8,8 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using GymManagementApp.Data;
 using GymManagementApp.Models;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace SalonYöneticisi.Controllers
 {
+
     public class SalonsController : Controller
     {
         private readonly SporSalonuContext _context;
@@ -44,6 +47,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Salons/Create
+        [Authorize(Roles = "Admin")] // Only users in the Admin role can access this controller
         public IActionResult Create()
         {
             return View();
@@ -66,6 +70,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Salons/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -117,6 +122,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Salons/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

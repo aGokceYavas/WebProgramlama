@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GymManagementApp.Data;
 using GymManagementApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SalonYöneticisi.Controllers
 {
+
     public class EgitmensController : Controller
     {
         private readonly SporSalonuContext _context;
@@ -46,6 +48,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Egitmens/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["SalonId"] = new SelectList(_context.Salonlar, "Id", "Ad");
@@ -70,6 +73,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Egitmens düzenle/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -123,6 +127,7 @@ namespace SalonYöneticisi.Controllers
         }
 
         // GET: Egitmens sil /5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

@@ -4,11 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>HİZMET PAKETLERİ</h1>
+@if (User.IsInRole("Admin"))
+{
+    <p>
+    <a asp-action="Create">Yeni Hizmet Paketi Ekle</a>
+    </p>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -37,9 +40,16 @@
                 @Html.DisplayFor(modelItem => item.Ucret)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Detaylar</a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span> | </span>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a>
+                        <span> | </span>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Sil</a>
+                    }               
+             
             </td>
         </tr>
 }
