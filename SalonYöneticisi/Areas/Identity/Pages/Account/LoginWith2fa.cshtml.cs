@@ -13,7 +13,7 @@ using GymManagementApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace SalonYöneticisi.Areas.Identity.Pages.Account
+namespace GymManagementApp.Areas.Identity.Pages.Account
 {
     public class LoginWith2faModel : PageModel
     {

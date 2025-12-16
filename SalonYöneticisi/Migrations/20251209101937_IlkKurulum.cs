@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SalonYöneticisi.Migrations
+namespace GymManagementApp.Migrations
 {
     /// <inheritdoc />
     public partial class IlkKurulum : Migration

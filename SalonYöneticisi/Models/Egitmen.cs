@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GymManagementApp.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymManagementApp.Models
@@ -13,13 +14,14 @@ namespace GymManagementApp.Models
 
         [Display(Name = "Uzmanlık Alanı")]
         public string? UzmanlikAlani { get; set; }
-
-        [Display(Name = "Çalıştığı Salon")]
-        public int SalonId { get; set; }
-
-        [ForeignKey("SalonId")]
-        public virtual Salon? Salon { get; set; }
-
         public virtual ICollection<Randevu> Randevular { get; set; } = new List<Randevu>();
+
+        [Display(Name = "Mesai Başlangıç Saati")]
+        [Range(0, 23)]
+        public int BaslamaSaati { get; set; } = 9; // Varsayılan sabah 9
+
+        [Display(Name = "Mesai Bitiş Saati")]
+        [Range(0, 23)]
+        public int BitisSaati { get; set; } = 18; // Varsayılan akşam 6
     }
 }

@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace SalonYöneticisi.Areas.Identity.Pages.Account
+namespace GymManagementApp.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
@@ -71,6 +71,10 @@ namespace SalonYöneticisi.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Required(ErrorMessage = "Ad Soyad gereklidir.")]
+            [Display(Name = "Ad Soyad")]
+            public string AdSoyad { get; set; }
+            // -------------------------
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -116,6 +120,7 @@ namespace SalonYöneticisi.Areas.Identity.Pages.Account
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                user.AdSoyad = Input.AdSoyad;
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

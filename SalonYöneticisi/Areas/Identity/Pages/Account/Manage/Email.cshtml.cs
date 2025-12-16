@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace SalonYöneticisi.Areas.Identity.Pages.Account.Manage
+namespace GymManagementApp.Areas.Identity.Pages.Account.Manage
 {
     public class EmailModel : PageModel
     {

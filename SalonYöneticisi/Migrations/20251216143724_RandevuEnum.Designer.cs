@@ -4,6 +4,7 @@ using GymManagementApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymManagementApp.Migrations
 {
     [DbContext(typeof(SporSalonuContext))]
-    partial class SporSalonuContextModelSnapshot : ModelSnapshot
+    [Migration("20251216143724_RandevuEnum")]
+    partial class RandevuEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,16 +37,15 @@ namespace GymManagementApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BaslamaSaati")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BitisSaati")
+                    b.Property<int>("SalonId")
                         .HasColumnType("int");
 
                     b.Property<string>("UzmanlikAlani")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SalonId");
 
                     b.ToTable("Egitmenler");
                 });
@@ -107,6 +109,29 @@ namespace GymManagementApp.Migrations
                     b.HasIndex("UyeId");
 
                     b.ToTable("Randevular");
+                });
+
+            modelBuilder.Entity("GymManagementApp.Models.Salon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Adres")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Salonlar");
                 });
 
             modelBuilder.Entity("GymManagementApp.Models.Uye", b =>
@@ -317,6 +342,17 @@ namespace GymManagementApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("GymManagementApp.Models.Egitmen", b =>
+                {
+                    b.HasOne("GymManagementApp.Models.Salon", "Salon")
+                        .WithMany("Egitmenler")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
             modelBuilder.Entity("GymManagementApp.Models.Randevu", b =>
                 {
                     b.HasOne("GymManagementApp.Models.Egitmen", "Egitmen")
@@ -396,6 +432,11 @@ namespace GymManagementApp.Migrations
             modelBuilder.Entity("GymManagementApp.Models.Egitmen", b =>
                 {
                     b.Navigation("Randevular");
+                });
+
+            modelBuilder.Entity("GymManagementApp.Models.Salon", b =>
+                {
+                    b.Navigation("Egitmenler");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymManagementApp.Models
 {
+
+    public enum RandevuDurumu
+    {
+        OnayBekliyor,
+        Onaylandi,
+        Iptal,
+        Tamamlandi
+    }
     public class Randevu
     {
         public int Id { get; set; }
@@ -32,6 +40,8 @@ namespace GymManagementApp.Models
         [ForeignKey("HizmetPaketiId")]
         public virtual HizmetPaketi? HizmetPaketi { get; set; }
 
-        public string? Durum { get; set; } = "Bekliyor";
+        //public string? Durum { get; set; } = "Bekliyor";
+
+        public RandevuDurumu Durum { get; set; }
     }
 }

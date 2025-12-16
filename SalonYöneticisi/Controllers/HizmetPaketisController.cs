@@ -9,7 +9,7 @@ using GymManagementApp.Data;
 using GymManagementApp.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace SalonYöneticisi.Controllers
+namespace GymManagementApp.Controllers
 {
     public class HizmetPaketisController : Controller
     {

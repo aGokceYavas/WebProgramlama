@@ -2,7 +2,7 @@ using GymManagementApp.Data;
 using GymManagementApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using SalonYöneticisi.Services;
+using GymManagementApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +31,7 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
+
 
 using (var scope = app.Services.CreateScope())
 {
@@ -68,6 +69,7 @@ using (var scope = app.Services.CreateScope())
     {
     }
 }
+
 
 if (!app.Environment.IsDevelopment())
 {

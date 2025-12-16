@@ -1,4 +1,4 @@
-namespace SalonYöneticisi.Models
+namespace GymManagementApp.Models
 {
     public class ErrorViewModel
     {

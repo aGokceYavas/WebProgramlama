@@ -1,6 +1,7 @@
 ﻿using GymManagementApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using GymManagementApp.Models;
 
 namespace GymManagementApp.Data
 {
@@ -10,8 +11,6 @@ namespace GymManagementApp.Data
             : base(options)
         {
         }
-
-        public DbSet<Salon> Salonlar { get; set; }
         public DbSet<Egitmen> Egitmenler { get; set; }
         public DbSet<HizmetPaketi> HizmetPaketleri { get; set; }
         public DbSet<Randevu> Randevular { get; set; }

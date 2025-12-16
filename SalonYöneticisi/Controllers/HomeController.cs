@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SalonYöneticisi.Models;
+using GymManagementApp.Models;
 
-namespace SalonYöneticisi.Controllers
+namespace GymManagementApp.Controllers
 {
     public class HomeController : Controller
     {

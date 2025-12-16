@@ -9,9 +9,8 @@ using GymManagementApp.Data;
 using GymManagementApp.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace SalonYöneticisi.Controllers
+namespace GymManagementApp.Controllers
 {
-
     public class EgitmensController : Controller
     {
         private readonly SporSalonuContext _context;
@@ -24,8 +23,9 @@ namespace SalonYöneticisi.Controllers
         // GET: Egitmens
         public async Task<IActionResult> Index()
         {
-            var sporSalonuContext = _context.Egitmenler.Include(e => e.Salon);
-            return View(await sporSalonuContext.ToListAsync());
+            // DÜZELTME: Eskiden Salon include ediyorduk, sildik.
+            // Ayrıca değişken ismi hatası giderildi.
+            return View(await _context.Egitmenler.ToListAsync());
         }
 
         // GET: Egitmens/Details/5
@@ -37,7 +37,6 @@ namespace SalonYöneticisi.Controllers
             }
 
             var egitmen = await _context.Egitmenler
-                .Include(e => e.Salon)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (egitmen == null)
             {
@@ -51,16 +50,15 @@ namespace SalonYöneticisi.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["SalonId"] = new SelectList(_context.Salonlar, "Id", "Ad");
+            // DÜZELTME: ViewData["SalonId"] satırları silindi.
             return View();
         }
 
         // POST: Egitmens/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AdSoyad,UzmanlikAlani,SalonId")] Egitmen egitmen)
+        // DÜZELTME: SalonId silindi, yerine BaslamaSaati ve BitisSaati eklendi.
+        public async Task<IActionResult> Create([Bind("Id,AdSoyad,UzmanlikAlani,BaslamaSaati,BitisSaati")] Egitmen egitmen)
         {
             if (ModelState.IsValid)
             {
@@ -68,11 +66,11 @@ namespace SalonYöneticisi.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SalonId"] = new SelectList(_context.Salonlar, "Id", "Ad", egitmen.SalonId);
+            // DÜZELTME: Hata olursa geri dönerken salon listesi doldurmaya gerek yok.
             return View(egitmen);
         }
 
-        // GET: Egitmens düzenle/5
+        // GET: Egitmens/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -86,16 +84,15 @@ namespace SalonYöneticisi.Controllers
             {
                 return NotFound();
             }
-            ViewData["SalonId"] = new SelectList(_context.Salonlar, "Id", "Ad", egitmen.SalonId);
+            // DÜZELTME: ViewData["SalonId"] silindi.
             return View(egitmen);
         }
 
-        // POST: Egitmens düzenle/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Egitmens/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AdSoyad,UzmanlikAlani,SalonId")] Egitmen egitmen)
+        // DÜZELTME: SalonId silindi, Saatler eklendi.
+        public async Task<IActionResult> Edit(int id, [Bind("Id,AdSoyad,UzmanlikAlani,BaslamaSaati,BitisSaati")] Egitmen egitmen)
         {
             if (id != egitmen.Id)
             {
@@ -122,11 +119,10 @@ namespace SalonYöneticisi.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SalonId"] = new SelectList(_context.Salonlar, "Id", "Ad", egitmen.SalonId);
             return View(egitmen);
         }
 
-        // GET: Egitmens sil /5
+        // GET: Egitmens/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -136,7 +132,6 @@ namespace SalonYöneticisi.Controllers
             }
 
             var egitmen = await _context.Egitmenler
-                .Include(e => e.Salon)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (egitmen == null)
             {
@@ -146,7 +141,7 @@ namespace SalonYöneticisi.Controllers
             return View(egitmen);
         }
 
-        // POST: Egitmen sil/5
+        // POST: Egitmens/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

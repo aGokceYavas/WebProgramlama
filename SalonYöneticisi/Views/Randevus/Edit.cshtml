@@ -1,0 +1,71 @@
+﻿@model GymManagementApp.Models.Randevu
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Düzenle</h1>
+
+<h4>Randevu</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Tarih" class="control-label"></label>
+                <input asp-for="Tarih" class="form-control" />
+                <span asp-validation-for="Tarih" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Saat" class="control-label"></label>
+                <input asp-for="Saat" class="form-control" />
+                <span asp-validation-for="Saat" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="UyeId" />
+
+            <div class="form-group mb-3">
+                <label class="control-label fw-bold">Randevu Sahibi</label>
+                @{
+                    string gorunurBilgi = Model.Uye?.Email;
+                    if (Model.Uye != null && !string.IsNullOrEmpty(Model.Uye.AdSoyad))
+                    {
+                        // Örnek Çıktı: Ahmet Yılmaz (ahmet@mail.com)
+                        gorunurBilgi = $"{Model.Uye.AdSoyad} ({Model.Uye.Email})";
+                    }
+                }
+                <input type="text" class="form-control" value="@gorunurBilgi" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="EgitmenId" class="control-label"></label>
+                <select asp-for="EgitmenId" class="form-control" asp-items="ViewBag.EgitmenId"></select>
+                <span asp-validation-for="EgitmenId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HizmetPaketiId" class="control-label"></label>
+                <select asp-for="HizmetPaketiId" class="form-control" asp-items="ViewBag.HizmetPaketiId"></select>
+                <span asp-validation-for="HizmetPaketiId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Durum" class="control-label fw-bold"></label>
+
+                <select asp-for="Durum" class="form-control"
+                        asp-items="Html.GetEnumSelectList<GymManagementApp.Models.RandevuDurumu>()">
+                </select>
+                <span asp-validation-for="Durum" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Listeye Dön</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

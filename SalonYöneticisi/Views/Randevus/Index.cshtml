@@ -1,0 +1,81 @@
+﻿@model IEnumerable<GymManagementApp.Models.Randevu>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>RANDEVU AL</h1>
+
+<p>
+    <a asp-action="Create">Yeni Randevu Oluştur</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tarih)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Saat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Uye)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Egitmen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HizmetPaketi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Durum)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tarih)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Saat)
+            </td>
+            <td>
+                    @if (item.Uye != null)
+                    {
+                        @if (!string.IsNullOrEmpty(item.Uye.AdSoyad))
+                        {
+                            <span class="fw-bold">@item.Uye.AdSoyad</span>
+                        }
+                        else
+                        {
+                            <span style="text-transform: capitalize;">
+                                @item.Uye.Email.Split('@')[0]
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Misafir</span>
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Egitmen.AdSoyad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HizmetPaketi.Ad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Durum)
+            </td>
+            <td>                
+                <a asp-action="Details" asp-route-id="@item.Id">Detaylar</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Sil</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
