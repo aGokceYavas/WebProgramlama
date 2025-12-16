@@ -23,6 +23,22 @@
                 <input asp-for="UzmanlikAlani" class="form-control" />
                 <span asp-validation-for="UzmanlikAlani" class="text-danger"></span>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="BaslamaSaati" class="control-label fw-bold">Mesai Başlangıç</label>
+                        <select asp-for="BaslamaSaati" class="form-select" asp-items="ViewBag.Saatler"></select>
+                        <span asp-validation-for="BaslamaSaati" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="BitisSaati" class="control-label fw-bold">Mesai Bitiş</label>
+                        <select asp-for="BitisSaati" class="form-select" asp-items="ViewBag.Saatler"></select>
+                        <span asp-validation-for="BitisSaati" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

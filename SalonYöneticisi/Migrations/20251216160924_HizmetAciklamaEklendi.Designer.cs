@@ -4,6 +4,7 @@ using GymManagementApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymManagementApp.Migrations
 {
     [DbContext(typeof(SporSalonuContext))]
-    partial class SporSalonuContextModelSnapshot : ModelSnapshot
+    [Migration("20251216160924_HizmetAciklamaEklendi")]
+    partial class HizmetAciklamaEklendi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,6 @@ namespace GymManagementApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EgitmenId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Sure")
                         .HasColumnType("int");
 
@@ -73,8 +73,6 @@ namespace GymManagementApp.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EgitmenId");
 
                     b.ToTable("HizmetPaketleri");
                 });
@@ -323,17 +321,6 @@ namespace GymManagementApp.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("GymManagementApp.Models.HizmetPaketi", b =>
-                {
-                    b.HasOne("GymManagementApp.Models.Egitmen", "Egitmen")
-                        .WithMany()
-                        .HasForeignKey("EgitmenId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Egitmen");
                 });
 
             modelBuilder.Entity("GymManagementApp.Models.Randevu", b =>

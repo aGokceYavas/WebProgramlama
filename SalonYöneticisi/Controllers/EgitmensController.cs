@@ -15,6 +15,24 @@ namespace GymManagementApp.Controllers
     {
         private readonly SporSalonuContext _context;
 
+        private void SaatleriDoldur()
+        {
+            var saatler = new List<SelectListItem>();
+
+            // Sabah 8'den Akşam 22'ye kadar (İstersen sayıları değiştirebilirsin)
+            for (int i = 8; i <= 22; i++)
+            {
+                saatler.Add(new SelectListItem
+                {
+                    Text = $"{i}:00", // Ekranda görünecek (09:00)
+                    Value = i.ToString() // Veritabanına gidecek (9)
+                });
+            }
+
+            // Bu listeyi View'a taşıması için ViewBag'e atıyoruz
+            ViewBag.Saatler = new SelectList(saatler, "Value", "Text");
+        }
+
         public EgitmensController(SporSalonuContext context)
         {
             _context = context;
@@ -50,7 +68,7 @@ namespace GymManagementApp.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            // DÜZELTME: ViewData["SalonId"] satırları silindi.
+            SaatleriDoldur();
             return View();
         }
 
@@ -84,7 +102,7 @@ namespace GymManagementApp.Controllers
             {
                 return NotFound();
             }
-            // DÜZELTME: ViewData["SalonId"] silindi.
+            SaatleriDoldur();
             return View(egitmen);
         }
 
