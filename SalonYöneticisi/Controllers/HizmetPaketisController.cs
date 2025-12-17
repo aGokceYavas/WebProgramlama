@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GymManagementApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+
     public class HizmetPaketisController : Controller
     {
         private readonly SporSalonuContext _context;
@@ -44,6 +44,7 @@ namespace GymManagementApp.Controllers
         }
 
         // GET: HizmetPaketis/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             EgitmenListesiHazirla();
@@ -53,6 +54,7 @@ namespace GymManagementApp.Controllers
         // POST: HizmetPaketis/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         // Bind içine 'EgitmenId' ve 'Aciklama' eklendi
         public async Task<IActionResult> Create([Bind("Id,Ad,Sure,Ucret,Aciklama,EgitmenId")] HizmetPaketi hizmetPaketi)
         {
@@ -76,6 +78,7 @@ namespace GymManagementApp.Controllers
         }
 
         // GET: HizmetPaketis/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -90,6 +93,7 @@ namespace GymManagementApp.Controllers
         // POST: HizmetPaketis/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ad,Sure,Ucret,Aciklama,EgitmenId")] HizmetPaketi hizmetPaketi)
         {
             if (id != hizmetPaketi.Id) return NotFound();
@@ -121,6 +125,7 @@ namespace GymManagementApp.Controllers
         }
 
         // GET: HizmetPaketis/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -137,6 +142,7 @@ namespace GymManagementApp.Controllers
         // POST: HizmetPaketis/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var hizmetPaketi = await _context.HizmetPaketleri.FindAsync(id);

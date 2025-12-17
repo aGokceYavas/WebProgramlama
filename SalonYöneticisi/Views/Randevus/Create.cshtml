@@ -1,47 +1,165 @@
-﻿@model GymManagementApp.Models.Randevu
+﻿@model GymManagementApp.Models.RandevuAlViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Randevu Al";
+    // Gün isimleri
+    var gunler = new[] { "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar" };
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-light">
+            <h4 class="card-title text-primary"><i class="fa fa-calendar-plus"></i> Yeni Randevu</h4>
+            <hr />
 
-<h4>Randevu</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Tarih" class="control-label"></label>
-                <input asp-for="Tarih" class="form-control" />
-                <span asp-validation-for="Tarih" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Saat" class="control-label"></label>
-                <input asp-for="Saat" class="form-control" />
-                <span asp-validation-for="Saat" class="text-danger"></span>
-            </div>
+            <form method="get" action="Create">
+                <div class="form-group">
+                    <label class="fw-bold mb-2">Lütfen Bir Hizmet Paketi Seçiniz:</label>
+                    <select name="paketId" class="form-control form-select-lg" onchange="this.form.submit()">
+                        <option value="">-- Paket Seçimi --</option>
+                        @foreach (var p in Model.Paketler)
+                        {
+                            // Seçili olan paketi listede 'selected' yap
+                            if (Model.SeciliPaketId == p.Id)
+                            {
+                                <option value="@p.Id" selected>@p.Ad - @p.Egitmen?.AdSoyad (@p.Sure dk - @p.Ucret TL)</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@p.Ad - @p.Egitmen?.AdSoyad (@p.Sure dk - @p.Ucret TL)</option>
+                            }
+                        }
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="EgitmenId" class="control-label"></label>
-                <select asp-for="EgitmenId" class ="form-control" asp-items="ViewBag.EgitmenId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="HizmetPaketiId" class="control-label"></label>
-                <select asp-for="HizmetPaketiId" class ="form-control" asp-items="ViewBag.HizmetPaketiId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+            </form>
+            @if (User.IsInRole("Admin") && Model.SeciliPaket != null)
+            {
+                <div class="alert alert-warning mt-3">
+                    <label class="fw-bold"><i class="fa fa-user-secret"></i> Admin İşlemi: Randevu Kimin Adına?</label>
+                    <select id="adminUyeSecimi" class="form-select mt-1">
+                        <option value="">-- Kendim İçin Alıyorum --</option>
+                        @foreach (var u in Model.Uyeler)
+                        {
+                            <option value="@u.Id">@u.Email</option>
+                        }
+                    </select>
+                    <small class="text-muted">Bir üye seçerseniz randevu onun adına kaydedilir.</small>
+                </div>
+            }
+        </div>
     </div>
+
+    @if (Model.SeciliPaket != null)
+    {
+        <div class="alert alert-info">
+            <strong>Bilgi:</strong>
+            <span class="fw-bold">@Model.Egitmen?.AdSoyad</span> hocadan
+            <span class="fw-bold">@Model.SeciliPaket.Ad</span> (@Model.SeciliPaket.Sure dk)
+            için uygun saati seçiniz.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;">Saat</th>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            var tarih = Model.BaslangicTarihi.AddDays(i);
+                            // Bugünün sütununu mavi yap
+                            <th class="@(tarih.Date == DateTime.Today ? "bg-primary text-white" : "")">
+                                @gunler[i]<br />
+                                <small style="font-weight:normal">@tarih.ToString("dd.MM")</small>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        // ÖNEMLİ: Paket kaç slot (kaç tane 30dk) yer kaplayacak?
+                        // 90dk ise -> 3 slot. 60dk ise -> 2 slot.
+                        int gerekliSlot = Model.SeciliPaket.Sure / 30;
+                    }
+
+                    @foreach (var saat in Model.SaatDilimleri)
+                    {
+                        <tr>
+                            <td class="fw-bold bg-light">@saat.ToString(@"hh\:mm")</td>
+
+                            @for (int i = 0; i < 7; i++)
+                            {
+                                var hucreTarihi = Model.BaslangicTarihi.AddDays(i);
+
+                                // MÜSAİTLİK KONTROLÜ (TETRIS MANTIĞI)
+                                // Başlangıç saatinden itibaren 'gerekliSlot' kadar aşağısı boş mu?
+                                bool musait = true;
+                                TimeSpan kontrolSaati = saat;
+
+                                for (int k = 0; k < gerekliSlot; k++)
+                                {
+                                    string key = $"{hucreTarihi:yyyy-MM-dd}_{kontrolSaati:hh\\:mm}";
+
+                                    // 1. Bu kutu dolu mu?
+                                    if (Model.DoluSlotlar.Contains(key)) { musait = false; break; }
+
+                                    // 2. Mesai dışına taşıyor mu?
+                                    if (!Model.SaatDilimleri.Contains(kontrolSaati)) { musait = false; break; }
+
+                                    // Bir sonraki 30 dakikaya bak
+                                    kontrolSaati = kontrolSaati.Add(TimeSpan.FromMinutes(30));
+                                }
+
+                                // Geçmiş zamanı engelle
+                                bool gecmis = hucreTarihi < DateTime.Today || (hucreTarihi == DateTime.Today && saat < DateTime.Now.TimeOfDay);
+
+                                <td>
+                                    @if (gecmis)
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                    else if (!musait)
+                                    {
+                                        <button class="btn btn-secondary btn-sm w-100 disabled" style="opacity: 0.5;">DOLU</button>
+                                    }
+                                    else
+                                    {
+                                        <button onclick="randevuAl('@hucreTarihi.ToString("yyyy-MM-dd")', '@saat')"
+                                                class="btn btn-success btn-sm w-100">
+                                            SEÇ
+                                        </button>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<form id="randevuForm" asp-action="Create" method="post">
+    <input type="hidden" name="HizmetPaketiId" value="@Model.SeciliPaketId" />
+    <input type="hidden" id="inputTarih" name="Tarih" />
+    <input type="hidden" id="inputSaat" name="Saat" />
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <input type="hidden" id="inputUyeId" name="UyeId" />
+</form>
+
+<script>
+    function randevuAl(tarih, saat) {
+        if(confirm(tarih + " Saat: " + saat + " için randevuyu onaylıyor musunuz?")) {
+            // Gizli inputları doldur
+            document.getElementById("inputTarih").value = tarih;
+            document.getElementById("inputSaat").value = saat;
+            var adminSelect = document.getElementById("adminUyeSecimi");
+            if (adminSelect && adminSelect.value !== "") {
+                // Seçilen üyenin ID'sini forma yaz
+                document.getElementById("inputUyeId").value = adminSelect.value;
+            }
+            // Formu gönder
+            document.getElementById("randevuForm").submit();
+        }
+    }
+</script>

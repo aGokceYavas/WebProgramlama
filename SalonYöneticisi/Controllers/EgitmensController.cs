@@ -164,10 +164,24 @@ namespace GymManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var egitmen = await _context.Egitmenler.FindAsync(id);
-            if (egitmen != null)
+            // 1. KONTROL: Bu eğitmene bağlı hizmet paketi var mı?
+            bool paketiVarMi = await _context.HizmetPaketleri.AnyAsync(h => h.EgitmenId == id);
+
+            if (paketiVarMi)
             {
-                _context.Egitmenler.Remove(egitmen);
+                // Eğer paketi varsa, silme! Kullanıcıya hata mesajı hazırla.
+                ViewBag.HataMesaji = "Bu eğitmen şu anda bir veya daha fazla hizmet paketinden sorumlu olduğu için silinemez. Lütfen önce ilgili hizmet paketlerini başka bir eğitmene atayın veya silin.";
+
+                // Eğitmen bilgilerini tekrar çekip sayfayı yeniden gösteriyoruz
+                var egitmen = await _context.Egitmenler.FindAsync(id);
+                return View(egitmen);
+            }
+
+            // 2. Engel yoksa silme işlemine devam et
+            var egitmenSilinecek = await _context.Egitmenler.FindAsync(id);
+            if (egitmenSilinecek != null)
+            {
+                _context.Egitmenler.Remove(egitmenSilinecek);
             }
 
             await _context.SaveChangesAsync();

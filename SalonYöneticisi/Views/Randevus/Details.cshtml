@@ -1,54 +1,80 @@
 ﻿@model GymManagementApp.Models.Randevu
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Randevu Detayları";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fa fa-info-circle"></i> Randevu Detayları</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Tarih / Saat</dt>
+                <dd class="col-sm-9">
+                    @Model.Tarih.ToString("dd.MM.yyyy") - @Model.Saat
+                </dd>
 
-<div>
-    <h4>Randevu</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tarih)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tarih)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Saat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Saat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Uye)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Uye.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Egitmen)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Egitmen.AdSoyad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HizmetPaketi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HizmetPaketi.Ad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Durum)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Durum)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <dt class="col-sm-3 fw-bold">Eğitmen</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Egitmen != null)
+                    {
+                        <span>@Model.Egitmen.AdSoyad (@Model.Egitmen.UzmanlikAlani)</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Bilgi Yok</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 fw-bold">Hizmet Paketi</dt>
+                <dd class="col-sm-9">
+                    @if (Model.HizmetPaketi != null)
+                    {
+                        <span>@Model.HizmetPaketi.Ad (@Model.HizmetPaketi.Sure dk)</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Silinmiş Paket</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 fw-bold">Randevu Sahibi</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Uye != null)
+                    {
+                        <span>@Model.Uye.Email</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Kullanıcı Bulunamadı</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 fw-bold">Durum</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Onaylandi)
+                    {
+                        <span class="badge bg-success">Onaylandı</span>
+                    }
+                    else if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Iptal)
+                    {
+                        <span class="badge bg-danger">İptal</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-muted">
+            <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+            @if (User.IsInRole("Admin") || (User.Identity.Name == Model.Uye?.Email && Model.Durum != GymManagementApp.Models.RandevuDurumu.Iptal))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+            }
+        </div>
+    </div>
 </div>
