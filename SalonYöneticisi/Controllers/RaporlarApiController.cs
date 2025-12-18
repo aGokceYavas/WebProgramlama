@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SalonYöneticisi.Data;
-using SalonYöneticisi.Models;
+using GymManagementApp.Data;
+using GymManagementApp.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GymManagementApp.Data;
 using GymManagementApp.Models;
 
-namespace SalonYöneticisi.Controllers
+namespace GymManagementApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
