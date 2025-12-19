@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "Performans Paneli";
+}
+
+<style>
+    body {
+        background-color: #f4f7f6;
+    }
+
+    /* Üst Bilgi Kartları (Dashboard Cards) */
+    .stat-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .border-left-primary { border-left: 5px solid #4e73df; }
+    .border-left-success { border-left: 5px solid #1cc88a; }
+    .border-left-warning { border-left: 5px solid #f6c23e; }
+
+    .icon-circle {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .bg-light-primary { background-color: #e8f0fe; color: #4e73df; }
+    .bg-light-success { background-color: #e6fffa; color: #1cc88a; }
+    .bg-light-warning { background-color: #fff8e1; color: #f6c23e; }
+
+    .modern-table-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: none;
+    }
+
+    .table thead th {
+        border-top: none;
+        border-bottom: 2px solid #e3e6f0;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #8898aa;
+        letter-spacing: 1px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #4e73df;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .progress-thin {
+        height: 6px;
+        border-radius: 3px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-dark fw-bold mb-0">📊 Yönetici Paneli & Raporlar</h3>
+            <span class="text-muted">Eğitmen performans analizleri ve genel durum özeti.</span>
+        </div>
+        <button onclick="verileriYenile()" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="fa fa-sync-alt me-2"></i> Verileri Güncelle
+        </button>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card border-left-primary h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">En Çok Çalışan (Ayın Yıldızı)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="cardBestInstructor">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-light-primary">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card border-left-success h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Toplam Ciro</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="cardTotalRevenue">0 ₺</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-light-success">
+                                <i class="fas fa-lira-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card stat-card border-left-warning h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Toplam Randevu Kaydı</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="cardTotalAppts">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-light-warning">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card modern-table-card mb-4">
+        <div class="card-header py-3 bg-white d-flex align-items-center border-bottom-0">
+            <h6 class="m-0 font-weight-bold text-primary">Detaylı Eğitmen Listesi</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Eğitmen</th>
+                            <th>Randevu Sayısı</th>
+                            <th>Performans Grafiği (Gelir Bazlı)</th>
+                            <th>Toplam Kazanç</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabloGovdesi">
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted">Veriler analiz ediliyor...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            verileriGetirVeYazdir();
+        });
+
+        function verileriYenile() {
+            // "yükleniyor"
+            document.getElementById("tabloGovdesi").innerHTML = '<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+            // sıfırlama
+            document.getElementById("cardBestInstructor").innerText = "...";
+
+            setTimeout(verileriGetirVeYazdir, 600);
+        }
+
+        function verileriGetirVeYazdir() {
+            const apiAdresi = "/api/RaporlarApi/EgitmenPerformans";
+
+            fetch(apiAdresi)
+                .then(cevap => cevap.json())
+                .then(veriListesi => {
+                    const tabloGovdesi = document.getElementById("tabloGovdesi");
+                    tabloGovdesi.innerHTML = "";
+
+                    if (veriListesi.length === 0) {
+                        tabloGovdesi.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Veri bulunamadı.</td></tr>';
+                        return;
+                    }
+
+                    
+                    let toplamCiro = 0;
+                    let toplamRandevu = 0;
+                    let enIyiHocaAdi = "-";
+                    let enYuksekKazanc = 0;
+
+                    veriListesi.forEach(item => {
+                        toplamCiro += item.toplamKazanc;
+                        toplamRandevu += item.randevuSayisi;
+
+                        if (item.toplamKazanc > enYuksekKazanc) {
+                            enYuksekKazanc = item.toplamKazanc;
+                            enIyiHocaAdi = item.egitmenAdi;
+                        }
+                    });
+
+                    document.getElementById("cardTotalRevenue").innerText = toplamCiro.toLocaleString('tr-TR') + " ₺";
+                    document.getElementById("cardTotalAppts").innerText = toplamRandevu;
+                    document.getElementById("cardBestInstructor").innerText = enIyiHocaAdi;
+
+                    // tablo
+                    veriListesi.forEach(satir => {
+                        let isimKisaltma = satir.egitmenAdi.split(" ").map(n => n[0]).join("").substring(0,2).toUpperCase();
+
+                        let yuzde = 0;
+                        if(enYuksekKazanc > 0) yuzde = Math.round((satir.toplamKazanc / enYuksekKazanc) * 100);
+
+                        let renkClass = "bg-secondary";
+                        if(yuzde >= 80) renkClass = "bg-success";
+                        else if(yuzde >= 50) renkClass = "bg-primary";
+                        else if(yuzde >= 25) renkClass = "bg-warning";
+
+                        const yeniSatir = `
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar shadow-sm">${isimKisaltma}</div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-0 fw-bold text-dark">${satir.egitmenAdi}</h6>
+                                            <small class="text-muted">Eğitmen</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                                        ${satir.randevuSayisi} Randevu
+                                    </span>
+                                </td>
+                                <td style="width: 35%;">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2 text-xs fw-bold text-muted">%${yuzde}</span>
+                                        <div class="progress progress-thin flex-grow-1">
+                                            <div class="progress-bar ${renkClass}" role="progressbar" style="width: ${yuzde}%"></div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 11px;">Hedef orani</small>
+                                </td>
+                                <td class="fw-bold text-dark">
+                                    ${satir.toplamKazanc.toLocaleString('tr-TR')} ₺
+                                </td>
+                            </tr>
+                        `;
+                        tabloGovdesi.innerHTML += yeniSatir;
+                    });
+                })
+                .catch(hata => {
+                    console.error("Hata:", hata);
+                    document.getElementById("tabloGovdesi").innerHTML = `<tr><td colspan="4" class="text-danger text-center">API Hatası: ${hata}</td></tr>`;
+                });
+        }
+    </script>
+}
