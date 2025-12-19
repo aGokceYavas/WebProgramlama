@@ -1,33 +1,75 @@
 ﻿@model GymManagementApp.Models.Egitmen
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Eğitmen Detayı";
+
+    // Baş Harf Hesaplama (Backend/C# tarafında)
+    string initials = "";
+    if (!string.IsNullOrEmpty(Model.AdSoyad))
+    {
+        var parts = Model.AdSoyad.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 0) { initials += parts[0][0]; }
+        if (parts.Length > 1) { initials += parts[parts.Length - 1][0]; }
+    }
+    initials = initials.ToUpper();
 }
 
-<h1>Eğitmen Detayları</h1>
-
-<div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AdSoyad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AdSoyad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UzmanlikAlani)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UzmanlikAlani)
-        </dd>
-    </dl>
-</div>
-<div>
-    @if (User.IsInRole("Admin"))
-    {
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Düzenle</a>
-        <span> | </span>
+<style>
+    /* Ortak Avatar Stili */
+    .avatar-circle-lg {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        color: white;
+        font-size: 40px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    <a asp-action="Index">Listeye dön</a>
+</style>
+
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 fade-in-up position-relative mt-5">
+
+                <div class="position-absolute start-50 translate-middle" style="top: 0;">
+                    <div class="avatar-circle-lg border border-4 border-white">
+                        @initials
+                    </div>
+                </div>
+
+                <div class="card-body pt-5 mt-4 pb-5 px-4">
+                    <h3 class="fw-bold mt-3 mb-1">@Model.AdSoyad</h3>
+                    <p class="text-muted fw-bold mb-4">@Model.UzmanlikAlani</p>
+
+                    <div class="d-flex justify-content-center gap-4 mb-4">
+                        <div class="text-center p-3 rounded-3 bg-light min-w-100">
+                            <small class="text-muted d-block mb-1">Başlangıç</small>
+                            <span class="h5 fw-bold text-dark">@Model.BaslamaSaati:00</span>
+                        </div>
+                        <div class="text-center p-3 rounded-3 bg-light min-w-100">
+                            <small class="text-muted d-block mb-1">Bitiş</small>
+                            <span class="h5 fw-bold text-dark">@Model.BitisSaati:00</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Geri
+                        </a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-dark rounded-pill px-4" style="background-color: #2c3e50; border:none;">
+                                <i class="fa-solid fa-pen me-2"></i>Düzenle
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

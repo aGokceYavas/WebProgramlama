@@ -1,55 +1,108 @@
 ﻿@model IEnumerable<GymManagementApp.Models.Egitmen>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Eğitmenlerimiz";
 }
 
-<h1>EĞİTMENLERİMİZ</h1>
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        color: white;
+        font-size: 28px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 15px auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
 
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-@if (User.IsInRole("Admin"))
-{ 
-<p>
-    <a asp-action="Create">Yeni Eğitmen Ekle</a>
-</p>
-}
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+        }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AdSoyad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UzmanlikAlani)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdSoyad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UzmanlikAlani)
-            </td>
-            <td>
-               
-                <a asp-action="Details" asp-route-id="@item.Id">Detaylar</a>
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+</style>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <span> | </span>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a>
-                        <span> | </span>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Sil</a>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-1">Kadro</h6>
+            <h2 class="fw-bold text-dark display-6">Profesyonel Eğitmenlerimiz</h2>
+        </div>
 
-                    }
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm">
+                <i class="fa-solid fa-user-plus me-2"></i>Yeni Eğitmen
+            </a>
+        }
+    </div>
 
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            // Initials Logic
+            string initials = "";
+            if (!string.IsNullOrEmpty(item.AdSoyad))
+            {
+                var parts = item.AdSoyad.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0) { initials += parts[0][0]; }
+                if (parts.Length > 1) { initials += parts[parts.Length - 1][0]; }
+            }
+            initials = initials.ToUpper();
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm card-hover rounded-4 overflow-hidden bg-white">
+                    <div class="card-body p-4 text-center">
+
+                        <div class="avatar-circle mb-3">
+                            @initials
+                        </div>
+
+                        <h4 class="fw-bold text-dark mb-1">@Html.DisplayFor(modelItem => item.AdSoyad)</h4>
+
+                        <span class="badge bg-light text-secondary mb-4 px-3 py-2 rounded-pill border">
+                            <i class="fa-solid fa-certificate me-1"></i> @Html.DisplayFor(modelItem => item.UzmanlikAlani)
+                        </span>
+
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-light action-btn text-muted" title="Detay">
+                                <i class="fa-solid fa-info"></i>
+                            </a>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light action-btn text-primary" title="Düzenle">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-light action-btn text-danger" title="Sil">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-0">
+                        <div style="height: 4px; background: linear-gradient(90deg, #2c3e50, #4ca1af);"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

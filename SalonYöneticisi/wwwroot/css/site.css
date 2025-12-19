@@ -20,3 +20,150 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+:root {
+    --yosun-yesili: #4A6C4C; 
+    --yosun-acik: #749F77; 
+    --gok-mavisi: #87CEEB; 
+    --gok-mavisi-koyu: #5698c4;
+    --arkaplan: #F9FAFB; 
+    --yazi-rengi: #2C3E50;
+}
+
+body {
+    background-color: var(--arkaplan);
+    color: var(--yazi-rengi);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+    }
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 600;
+    color: var(--yosun-yesili);
+    border-radius: 12px 12px 0 0 !important;
+}
+
+
+.btn-primary {
+    background-color: var(--yosun-yesili);
+    border-color: var(--yosun-yesili);
+    border-radius: 8px;
+    padding: 8px 20px;
+}
+
+    .btn-primary:hover {
+        background-color: var(--yosun-acik);
+        border-color: var(--yosun-acik);
+    }
+
+.btn-info, .btn-secondary {
+    background-color: var(--gok-mavisi);
+    border-color: var(--gok-mavisi);
+    color: white; 
+    border-radius: 8px;
+}
+
+    .btn-info:hover {
+        background-color: var(--gok-mavisi-koyu);
+        color: white;
+    }
+
+
+.table thead th {
+    background-color: var(--yosun-yesili);
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(135, 206, 235, 0.1); 
+}
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8fcf9; 
+}
+
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #2E5B3E 0%, #4A6C4C 100%);
+    color: white;
+}
+
+
+.btn-primary {
+    background: linear-gradient(135deg, #4A6C4C 0%, #3d5a3e 100%);
+    box-shadow: 0 4px 15px rgba(74, 108, 76, 0.4);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(74, 108, 76, 0.6);
+    }
+
+.btn-info {
+    background: linear-gradient(135deg, #87CEEB 0%, #5698c4 100%);
+    box-shadow: 0 4px 15px rgba(135, 206, 235, 0.4);
+    border: none;
+    color: white;
+}
+
+.card-hover {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    overflow: hidden;
+    position: relative;
+}
+
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(74, 108, 76, 0.15);
+    }
+
+    .card-hover::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #4A6C4C, #87CEEB);
+    }
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

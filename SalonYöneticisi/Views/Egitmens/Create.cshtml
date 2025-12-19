@@ -1,55 +1,62 @@
 ﻿@model GymManagementApp.Models.Egitmen
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Yeni Eğitmen";
 }
 
-<h1>Eğitmen Ekle</h1>
-
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AdSoyad" class="control-label"></label>
-                <input asp-for="AdSoyad" class="form-control" />
-                <span asp-validation-for="AdSoyad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UzmanlikAlani" class="control-label"></label>
-                <input asp-for="UzmanlikAlani" class="form-control" />
-                <span asp-validation-for="UzmanlikAlani" class="text-danger"></span>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="BaslamaSaati" class="control-label fw-bold">Mesai Başlangıç</label>
-                        <select asp-for="BaslamaSaati" class="form-select" asp-items="ViewBag.Saatler"></select>
-                        <span asp-validation-for="BaslamaSaati" class="text-danger"></span>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-white p-4 text-center border-0"
+                     style="background: linear-gradient(135deg, #2c3e50, #4ca1af);">
+                    <h3 class="fw-bold mb-0"><i class="fa-solid fa-user-plus me-2"></i>Eğitmen Ekle</h3>
+                    <small class="opacity-75">Yeni bir antrenör profili oluşturun</small>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="BitisSaati" class="control-label fw-bold">Mesai Bitiş</label>
-                        <select asp-for="BitisSaati" class="form-select" asp-items="ViewBag.Saatler"></select>
-                        <span asp-validation-for="BitisSaati" class="text-danger"></span>
-                    </div>
+
+                <div class="card-body p-5 bg-white">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="AdSoyad" class="form-control rounded-3" placeholder="Ad Soyad" />
+                            <label asp-for="AdSoyad"><i class="fa-solid fa-signature me-2 text-muted"></i>Ad Soyad</label>
+                            <span asp-validation-for="AdSoyad" class="text-danger small ms-2"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="UzmanlikAlani" class="form-control rounded-3" placeholder="Uzmanlık" />
+                            <label asp-for="UzmanlikAlani"><i class="fa-solid fa-dumbbell me-2 text-muted"></i>Uzmanlık Alanı</label>
+                            <span asp-validation-for="UzmanlikAlani" class="text-danger small ms-2"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <label asp-for="BaslamaSaati" class="form-label fw-bold text-muted small text-uppercase">Mesai Başlangıç</label>
+                                <select asp-for="BaslamaSaati" class="form-select py-3 bg-light border-0" asp-items="ViewBag.Saatler"></select>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="BitisSaati" class="form-label fw-bold text-muted small text-uppercase">Mesai Bitiş</label>
+                                <select asp-for="BitisSaati" class="form-select py-3 bg-light border-0" asp-items="ViewBag.Saatler"></select>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold shadow-sm"
+                                    style="background: #2c3e50; border:none;">
+                                <i class="fa-solid fa-check me-2"></i>Kaydet
+                            </button>
+                            <a asp-action="Index" class="btn btn-light text-muted rounded-pill">İptal</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Ekle" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Listeye Dön</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

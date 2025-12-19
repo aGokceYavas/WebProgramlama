@@ -2,11 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using GymManagementApp.Data;
 using GymManagementApp.Models;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using GymManagementApp.Data;
-using GymManagementApp.Models;
 
 namespace GymManagementApp.Controllers
 {
@@ -21,14 +20,30 @@ namespace GymManagementApp.Controllers
             _context = context;
         }
 
-        // 1. ENDPOINT: Eğitmen Performans Raporu
+        // GET: api/RaporlarApi/EgitmenPerformans
         [HttpGet("EgitmenPerformans")]
-        public async Task<IActionResult> GetEgitmenPerformans()
+        public async Task<IActionResult> GetEgitmenPerformans(DateTime? baslangic, DateTime? bitis)
         {
-            var rapor = await _context.Randevular
+            //Sorgu Taslağı
+            IQueryable<Randevu> sorgu = _context.Randevular
                 .Include(r => r.HizmetPaketi)
                 .Include(r => r.Egitmen)
-                .Where(r => r.Durum != RandevuDurumu.Iptal)
+                .Where(r => r.Durum != RandevuDurumu.Iptal); // İptaller hariç
+
+            //Filtreleme (LINQ Where)
+            if (baslangic.HasValue)
+            {
+                sorgu = sorgu.Where(r => r.Tarih >= baslangic.Value);
+            }
+
+            if (bitis.HasValue)
+            {
+                sorgu = sorgu.Where(r => r.Tarih <= bitis.Value);
+            }
+
+            //Veri Çekme
+
+            var raporListesi = await sorgu
                 .GroupBy(r => r.Egitmen.AdSoyad)
                 .Select(g => new
                 {
@@ -39,7 +54,7 @@ namespace GymManagementApp.Controllers
                 .OrderByDescending(x => x.RandevuSayisi)
                 .ToListAsync();
 
-            return Ok(rapor);
+            return Ok(raporListesi);
         }
     }
 }

@@ -1,39 +1,41 @@
 ﻿@model GymManagementApp.Models.HizmetPaketi
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Paket Sil";
 }
 
-<h1>Hizmet Paketi Sil</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center">
+                <div class="card-body p-5">
 
-<h3>Bu paketi silmek istediğinize emin misiniz?</h3>
-<div>
-    <h4>Silinecek Paket Bilgileri</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sure)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sure)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ucret)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ucret)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Sil" class="btn btn-danger" /> |
-        <a asp-action="Index">Listeye Dön</a>
-    </form>
+                    <div class="mb-4 text-danger">
+                        <div class="d-inline-block bg-danger bg-opacity-10 p-4 rounded-circle mb-3">
+                            <i class="fa-solid fa-trash-can fa-3x text-danger"></i>
+                        </div>
+                        <h3 class="fw-bold">Paketi Sil?</h3>
+                        <p class="text-muted">Bu işlem geri alınamaz. Aşağıdaki paketi silmek üzeresiniz:</p>
+                    </div>
+
+                    <div class="bg-light rounded-3 p-4 mb-4 text-start border-start border-4 border-danger">
+                        <h5 class="fw-bold text-dark mb-1">@Model.Ad</h5>
+                        <p class="text-muted mb-2 small">@Model.Aciklama</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <span class="badge bg-secondary"><i class="fa-regular fa-clock me-1"></i>@Model.Sure Dk</span>
+                            <span class="fw-bold fs-5 text-dark">@Model.Ucret ₺</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" class="d-grid gap-2">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold shadow-sm">
+                            <i class="fa-solid fa-check me-2"></i>Evet, Sil
+                        </button>
+                        <a asp-action="Index" class="btn btn-light rounded-pill text-muted">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

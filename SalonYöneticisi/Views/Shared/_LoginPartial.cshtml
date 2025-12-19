@@ -4,25 +4,79 @@
 @inject SignInManager<Uye> SignInManager
 @inject UserManager<Uye> UserManager
 
+@{
+    string gorunenIsim = "Kullanıcı";
+    string profilLinki = "/Identity/Account/Manage"; // Standart profil linki
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+
+        if (User.IsInRole("Admin"))
+        {
+            gorunenIsim = "Yönetici";
+        }
+
+        else if (user != null && !string.IsNullOrEmpty(user.AdSoyad))
+        {
+            gorunenIsim = user.AdSoyad;
+        }
+
+        else
+        {
+            var email = User.Identity?.Name ?? "";
+            if (email.Contains("@"))
+            {
+
+                string hamIsim = email.Split('@')[0];
+                gorunenIsim = char.ToUpper(hamIsim[0]) + hamIsim.Substring(1);
+            }
+            else
+            {
+                gorunenIsim = email;
+            }
+        }
+    }
+}
+
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Merhaba @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Çıkış Yap</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Üye Ol</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Giriş Yap</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Profilim">
+                <span class="d-inline-flex align-items-center">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <i class="fa-solid fa-crown text-warning me-2"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-circle-user me-2"></i>
+                    }
+
+                    <span class="fw-bold">Merhaba, @gorunenIsim</span>
+                </span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="nav-link btn btn-link border-0 text-start" style="cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Çıkış
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">
+                <i class="fa-solid fa-user-plus me-1"></i> Kayıt Ol
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="login" asp-area="Identity" asp-page="/Account/Login">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> Giriş Yap
+            </a>
+        </li>
+    }
 </ul>

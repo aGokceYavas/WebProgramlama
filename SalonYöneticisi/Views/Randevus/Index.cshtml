@@ -1,81 +1,91 @@
 ﻿@model IEnumerable<GymManagementApp.Models.Randevu>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Randevularım";
 }
 
-<h1>RANDEVU AL</h1>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-1">Takvim</h6>
+            <h2 class="fw-bold text-dark display-6">Randevular</h2>
+        </div>
 
-<p>
-    <a asp-action="Create">Yeni Randevu Oluştur</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tarih)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Saat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uye)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Egitmen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HizmetPaketi)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Durum)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tarih)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Saat)
-            </td>
-            <td>
-                    @if (item.Uye != null)
-                    {
-                        @if (!string.IsNullOrEmpty(item.Uye.AdSoyad))
+        <a asp-action="Create" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm" style="background: #2c3e50; border:none;">
+            <i class="fa-solid fa-calendar-plus me-2"></i>Yeni Randevu
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                    <div class="card-header border-0 text-white p-3 d-flex justify-content-between align-items-center"
+                         style="background: linear-gradient(135deg, #2c3e50, #4ca1af);">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-regular fa-calendar-days me-2"></i>
+                            <span class="fw-bold">@item.Tarih.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <div class="badge bg-white text-dark rounded-pill">
+                            <i class="fa-regular fa-clock me-1"></i> @item.Saat
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-1">@item.HizmetPaketi.Ad</h5>
+                        <p class="text-muted small mb-3">
+                            <i class="fa-solid fa-user-tie me-1"></i> @item.Egitmen.AdSoyad
+                        </p>
+
+                        @if (item.Uye != null)
                         {
-                            <span class="fw-bold">@item.Uye.AdSoyad</span>
+                            <div class="d-flex align-items-center mb-3 p-2 bg-light rounded-3">
+                                <i class="fa-solid fa-user me-2 text-muted"></i>
+                                <small class="text-dark fw-bold">
+                                    @(string.IsNullOrEmpty(item.Uye.AdSoyad) ? item.Uye.Email : item.Uye.AdSoyad)
+                                </small>
+                            </div>
                         }
-                        else
-                        {
-                            <span style="text-transform: capitalize;">
-                                @item.Uye.Email.Split('@')[0]
-                            </span>
-                        }
-                    }
-                    else
-                    {
-                        <span class="text-muted">Misafir</span>
-                    }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Egitmen.AdSoyad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HizmetPaketi.Ad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Durum)
-            </td>
-            <td>                
-                <a asp-action="Details" asp-route-id="@item.Id">Detaylar</a> |
-                <a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Sil</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+                        <div class="mb-4">
+                            @if (item.Durum == GymManagementApp.Models.RandevuDurumu.Onaylandi)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill border border-success">
+                                    <i class="fa-solid fa-check me-1"></i>Onaylandı
+                                </span>
+                            }
+                            else if (item.Durum == GymManagementApp.Models.RandevuDurumu.Iptal)
+                            {
+                                <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill border border-danger">
+                                    <i class="fa-solid fa-xmark me-1"></i>İptal Edildi
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill border border-warning">
+                                    <i class="fa-solid fa-hourglass-half me-1"></i>Bekliyor
+                                </span>
+                            }
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-dark rounded-pill btn-sm">
+                                <i class="fa-solid fa-circle-info me-1"></i> Detay
+                            </a>
+
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light btn-sm text-primary">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-light btn-sm text-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,80 +1,89 @@
 ﻿@model GymManagementApp.Models.Randevu
 
 @{
-    ViewData["Title"] = "Randevu Detayları";
+    ViewData["Title"] = "Randevu Detayı";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="fa fa-info-circle"></i> Randevu Detayları</h4>
-        </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3 fw-bold">Tarih / Saat</dt>
-                <dd class="col-sm-9">
-                    @Model.Tarih.ToString("dd.MM.yyyy") - @Model.Saat
-                </dd>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="text-center p-5 text-white position-relative" style="background: linear-gradient(135deg, #2c3e50, #4ca1af);">
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fa-regular fa-calendar-check fa-3x"></i>
+                    </div>
+                    <h2 class="fw-bold">Randevu Detayı</h2>
+                    <span class="badge bg-white text-dark rounded-pill px-3 py-2 mt-2">
+                        #@Model.Id
+                    </span>
+                </div>
 
-                <dt class="col-sm-3 fw-bold">Eğitmen</dt>
-                <dd class="col-sm-9">
-                    @if (Model.Egitmen != null)
-                    {
-                        <span>@Model.Egitmen.AdSoyad (@Model.Egitmen.UzmanlikAlani)</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Bilgi Yok</span>
-                    }
-                </dd>
+                <div class="card-body p-5">
+                    <div class="row text-center mb-4">
+                        <div class="col-6 border-end">
+                            <small class="text-muted text-uppercase fw-bold">Tarih</small>
+                            <h4 class="text-dark mb-0">@Model.Tarih.ToString("dd.MM.yyyy")</h4>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted text-uppercase fw-bold">Saat</small>
+                            <h4 class="text-dark mb-0">@Model.Saat</h4>
+                        </div>
+                    </div>
 
-                <dt class="col-sm-3 fw-bold">Hizmet Paketi</dt>
-                <dd class="col-sm-9">
-                    @if (Model.HizmetPaketi != null)
-                    {
-                        <span>@Model.HizmetPaketi.Ad (@Model.HizmetPaketi.Sure dk)</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Silinmiş Paket</span>
-                    }
-                </dd>
+                    <div class="bg-light p-4 rounded-3 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fa-solid fa-dumbbell text-muted me-3 fs-5"></i>
+                            <div>
+                                <small class="text-muted d-block">Hizmet Paketi</small>
+                                <span class="fw-bold text-dark">
+                                    @(Model.HizmetPaketi != null ? Model.HizmetPaketi.Ad : "Silinmiş Paket")
+                                </span>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 fw-bold">Randevu Sahibi</dt>
-                <dd class="col-sm-9">
-                    @if (Model.Uye != null)
-                    {
-                        <span>@Model.Uye.Email</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Kullanıcı Bulunamadı</span>
-                    }
-                </dd>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fa-solid fa-user-tie text-muted me-3 fs-5"></i>
+                            <div>
+                                <small class="text-muted d-block">Eğitmen</small>
+                                <span class="fw-bold text-dark">
+                                    @(Model.Egitmen != null ? Model.Egitmen.AdSoyad : "Atanmamış")
+                                </span>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 fw-bold">Durum</dt>
-                <dd class="col-sm-9">
-                    @if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Onaylandi)
-                    {
-                        <span class="badge bg-success">Onaylandı</span>
-                    }
-                    else if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Iptal)
-                    {
-                        <span class="badge bg-danger">İptal</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-warning text-dark">Onay Bekliyor</span>
-                    }
-                </dd>
-            </dl>
-        </div>
-        <div class="card-footer text-muted">
-            <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
-            @if (User.IsInRole("Admin") || (User.Identity.Name == Model.Uye?.Email && Model.Durum != GymManagementApp.Models.RandevuDurumu.Iptal))
-            {
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
-            }
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-info-circle text-muted me-3 fs-5"></i>
+                            <div>
+                                <small class="text-muted d-block">Durum</small>
+                                @if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Onaylandi)
+                                {
+                                    <span class="text-success fw-bold">Onaylandı</span>
+                                }
+                                else if (Model.Durum == GymManagementApp.Models.RandevuDurumu.Iptal)
+                                {
+                                    <span class="text-danger fw-bold">İptal Edildi</span>
+                                }
+                                else
+                                {
+                                    <span class="text-warning fw-bold">Onay Bekliyor</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Geri
+                        </a>
+                        @if (User.IsInRole("Admin") || (User.Identity.Name == Model.Uye?.Email && Model.Durum != GymManagementApp.Models.RandevuDurumu.Iptal))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-dark rounded-pill px-4" style="background: #2c3e50; border:none;">
+                                <i class="fa-solid fa-pen me-2"></i>Düzenle
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

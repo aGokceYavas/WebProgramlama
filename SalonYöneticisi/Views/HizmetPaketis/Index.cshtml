@@ -1,57 +1,139 @@
 ﻿@model IEnumerable<GymManagementApp.Models.HizmetPaketi>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Hizmet Paketleri";
 }
 
-<h1>HİZMET PAKETLERİ</h1>
-@if (User.IsInRole("Admin"))
-{
-    <p>
-    <a asp-action="Create">Yeni Hizmet Paketi Ekle</a>
-    </p>
-}
+<style>
+    .package-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sure)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ucret)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sure)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ucret)
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Detaylar</a>
+        .package-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+            border-color: #4ca1af;
+        }
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <span> | </span>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a>
-                        <span> | </span>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Sil</a>
-                    }               
-             
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    .price-tag {
+        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+
+    .duration-badge {
+        background-color: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        border: 1px solid #e9ecef;
+    }
+    /* Eğitmen linki için hover efekti */
+    .instructor-link:hover {
+        color: #4ca1af !important;
+        text-decoration: underline !important;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-1">Hizmetler</h6>
+            <h2 class="fw-bold text-dark display-6">Paket Seçenekleri</h2>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm" style="background: #2c3e50; border:none;">
+                <i class="fa-solid fa-plus me-2"></i>Yeni Paket
+            </a>
+        }
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm package-card rounded-4 overflow-hidden bg-white">
+
+                    <div class="card-body p-4 d-flex flex-column text-center">
+
+                        <div class="mb-3">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-3" style="width: 60px; height: 60px;">
+                                <i class="fa-solid fa-box-open fs-3" style="color: #2c3e50;"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-1">@item.Ad</h4>
+
+                            <div class="small text-muted">
+                                <i class="fa-solid fa-user-tie me-1"></i>
+                                @if (item.Egitmen != null)
+                                {
+                                    <a asp-controller="Egitmens" asp-action="Details" asp-route-id="@item.EgitmenId"
+                                       class="text-muted text-decoration-none instructor-link transition-colors">
+                                        @item.Egitmen.AdSoyad
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="badge rounded-pill duration-badge px-3 py-2">
+                                <i class="fa-regular fa-clock me-1"></i> @item.Sure Dakika
+                            </span>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="display-6 price-tag">@item.Ucret ₺</h2>
+                            <small class="text-muted">Seans Başına</small>
+                        </div>
+
+                        <p class="text-muted small mb-4 flex-grow-1">
+                            @if (!string.IsNullOrEmpty(item.Aciklama) && item.Aciklama.Length > 80)
+                            {
+                                @(item.Aciklama.Substring(0, 80) + "...")
+                            }
+                            else
+                            {
+                                @item.Aciklama
+                            }
+                        </p>
+
+                        <div class="d-grid gap-2">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Randevus" asp-action="Create" asp-route-paketId="@item.Id"
+                                   class="btn btn-success rounded-pill fw-bold shadow-sm mb-2">
+                                    <i class="fa-regular fa-calendar-check me-2"></i>Randevu Al
+                                </a>
+                            }
+
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-dark rounded-pill btn-sm">
+                                <i class="fa-solid fa-eye me-1"></i> İncele
+                            </a>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="btn-group mt-2" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light btn-sm text-primary">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-light btn-sm text-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer p-0 border-0">
+                        <div style="height: 5px; background: linear-gradient(90deg, #2c3e50, #4ca1af);"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

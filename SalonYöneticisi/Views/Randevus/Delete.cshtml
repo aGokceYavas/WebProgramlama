@@ -1,56 +1,45 @@
 ﻿@model GymManagementApp.Models.Randevu
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Randevu Sil";
 }
 
-<h1>Randevu Sil</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center">
+                <div class="card-body p-5">
 
-<h3>Bu randevuyu silmek istediğinize emin misiniz?</h3>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tarih)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tarih)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Saat)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Saat)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Uye)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Uye.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Egitmen)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Egitmen.AdSoyad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HizmetPaketi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HizmetPaketi.Ad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Durum)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Durum)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Sil" class="btn btn-danger" /> |
-        <a asp-action="Index">Listeye dön</a>
-    </form>
+                    <div class="mb-4 text-danger">
+                        <div class="d-inline-block bg-danger bg-opacity-10 p-4 rounded-circle mb-3">
+                            <i class="fa-solid fa-trash-can fa-3x text-danger"></i>
+                        </div>
+                        <h3 class="fw-bold">Randevuyu Sil?</h3>
+                        <p class="text-muted">Bu işlem geri alınamaz. Randevu kalıcı olarak silinecektir.</p>
+                    </div>
+
+                    <div class="bg-light rounded-3 p-4 mb-4 text-start border-start border-4 border-danger">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold text-dark">@Model.Tarih.ToString("dd.MM.yyyy")</span>
+                            <span class="badge bg-secondary">@Model.Saat</span>
+                        </div>
+                        <p class="text-muted mb-1 small">
+                            <i class="fa-solid fa-dumbbell me-1"></i> @Model.HizmetPaketi.Ad
+                        </p>
+                        <p class="text-muted small mb-0">
+                            <i class="fa-solid fa-user-tie me-1"></i> @Model.Egitmen.AdSoyad
+                        </p>
+                    </div>
+
+                    <form asp-action="Delete" class="d-grid gap-2">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold shadow-sm">
+                            <i class="fa-solid fa-check me-2"></i>Evet, Sil
+                        </button>
+                        <a asp-action="Index" class="btn btn-light rounded-pill text-muted">Vazgeç</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

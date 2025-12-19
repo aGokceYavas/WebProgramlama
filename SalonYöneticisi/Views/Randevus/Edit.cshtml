@@ -1,70 +1,88 @@
 ﻿@model GymManagementApp.Models.Randevu
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Randevu Düzenle";
 }
 
-<h1>Randevu Düzenle</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-white p-4 text-center border-0"
+                     style="background: linear-gradient(135deg, #2c3e50, #4ca1af);">
+                    <h3 class="fw-bold mb-0"><i class="fa-solid fa-pen-to-square me-2"></i>Randevu Düzenle</h3>
+                    <small class="opacity-75">#@Model.Id numaralı kaydı düzenliyorsunuz</small>
+                </div>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Tarih" class="control-label"></label>
-                <input asp-for="Tarih" class="form-control" />
-                <span asp-validation-for="Tarih" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Saat" class="control-label"></label>
-                <input asp-for="Saat" class="form-control" />
-                <span asp-validation-for="Saat" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="UyeId" />
+                <div class="card-body p-5 bg-white">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UyeId" />
 
-            <div class="form-group mb-3">
-                <label class="control-label fw-bold">Randevu Sahibi</label>
-                @{
-                    string gorunurBilgi = Model.Uye?.Email;
-                    if (Model.Uye != null && !string.IsNullOrEmpty(Model.Uye.AdSoyad))
-                    {
-                        // Örnek Çıktı: Ahmet Yılmaz (ahmet@mail.com)
-                        gorunurBilgi = $"{Model.Uye.AdSoyad} ({Model.Uye.Email})";
-                    }
-                }
-                <input type="text" class="form-control" value="@gorunurBilgi" disabled />
-            </div>
-            <div class="form-group">
-                <label asp-for="EgitmenId" class="control-label"></label>
-                <select asp-for="EgitmenId" class="form-control" asp-items="ViewBag.EgitmenId"></select>
-                <span asp-validation-for="EgitmenId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HizmetPaketiId" class="control-label"></label>
-                <select asp-for="HizmetPaketiId" class="form-control" asp-items="ViewBag.HizmetPaketiId"></select>
-                <span asp-validation-for="HizmetPaketiId" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Durum" class="control-label fw-bold"></label>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input asp-for="Tarih" type="date" class="form-control rounded-3" />
+                                    <label asp-for="Tarih">Tarih</label>
+                                </div>
+                                <span asp-validation-for="Tarih" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input asp-for="Saat" type="time" class="form-control rounded-3" />
+                                    <label asp-for="Saat">Saat</label>
+                                </div>
+                                <span asp-validation-for="Saat" class="text-danger small"></span>
+                            </div>
+                        </div>
 
-                <select asp-for="Durum" class="form-control"
-                        asp-items="Html.GetEnumSelectList<GymManagementApp.Models.RandevuDurumu>()">
-                </select>
-                <span asp-validation-for="Durum" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            @{
+                                string uyeBilgi = Model.Uye?.Email;
+                                if (Model.Uye != null && !string.IsNullOrEmpty(Model.Uye.AdSoyad))
+                                {
+                                    uyeBilgi = $"{Model.Uye.AdSoyad} ({Model.Uye.Email})";
+                                }
+                            }
+                            <input type="text" class="form-control rounded-3 bg-light" value="@uyeBilgi" disabled />
+                            <label>Randevu Sahibi</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="EgitmenId" class="form-select rounded-3" asp-items="ViewBag.EgitmenId"></select>
+                            <label asp-for="EgitmenId">Eğitmen</label>
+                            <span asp-validation-for="EgitmenId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="HizmetPaketiId" class="form-select rounded-3" asp-items="ViewBag.HizmetPaketiId"></select>
+                            <label asp-for="HizmetPaketiId">Hizmet Paketi</label>
+                            <span asp-validation-for="HizmetPaketiId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <select asp-for="Durum" class="form-select rounded-3" asp-items="Html.GetEnumSelectList<GymManagementApp.Models.RandevuDurumu>()"></select>
+                            <label asp-for="Durum">Randevu Durumu</label>
+                            <span asp-validation-for="Durum" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold shadow-sm" style="background: #2c3e50; border:none;">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Kaydet
+                            </button>
+                            <a asp-action="Index" class="btn btn-light text-muted rounded-pill">Vazgeç</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Kaydet" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Listeye Dön</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 }

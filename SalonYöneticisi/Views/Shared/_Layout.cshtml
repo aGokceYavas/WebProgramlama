@@ -1,72 +1,157 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SalonYöneticisi</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GymManagementApp.styles.css" asp-append-version="true" />
+
+    <style>
+        /* Varsayılan Header Davranışı: Yer kaplar (Relative) */
+        header {
+            position: relative;
+            z-index: 1000;
+            width: 100%;
+        }
+
+            /* SADECE Anasayfa için Overlay (Üstüne Binme) Modu */
+            header.header-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+        /* Glassmorphism Menü (Anasayfa İçin) */
+        .navbar-glass {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Koyu Zeminli Menü (Diğer Sayfalar İçin) */
+        .navbar-dark-bg {
+            background: rgba(44, 62, 80, 1) !important; /* Mat koyu renk */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Link Tasarımları */
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+            .nav-link:hover {
+                color: var(--gok-mavisi) !important;
+                text-shadow: 0 0 10px rgba(135, 206, 235, 0.6);
+                transform: translateY(-2px);
+            }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SalonYöneticisi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+<body class="d-flex flex-column min-vh-100">
+
+    @{
+        // Sayfa Kontrolü
+        var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
+        ViewContext.RouteData.Values["action"]?.ToString() == "Index";
+
+        // Anasayfa ise 'header-overlay' sınıfını ekle (Absolute), değilse boş bırak (Relative)
+        var headerClass = isHomePage ? "header-overlay" : "";
+
+        // Anasayfa ise şeffaf menü, değilse koyu zeminli menü
+        var navbarClass = isHomePage ? "navbar-glass" : "navbar-dark-bg";
+    }
+
+    <header class="@headerClass">
+        <nav class="navbar navbar-expand-lg @navbarClass py-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center text-white" asp-controller="Home" asp-action="Index">
+                    <div class="bg-white text-success rounded-circle d-flex justify-content-center align-items-center me-2 shadow" style="width: 40px; height: 40px;">
+                        <i class="fa-solid fa-dumbbell"></i>
+                    </div>
+                    Sora Gym
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Anasayfa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="HizmetPaketis" asp-action="Index">Hizmet Paketleri</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Egitmens" asp-action="Index">Eğitmenler</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Randevus" asp-action="Index">
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <span>Tüm Randevular</span>
-                                }
-                                else
-                                {
-                                    <span>Randevularım</span>
-                                }
-                            </a>
-                        </li>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Anasayfa</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="HizmetPaketis" asp-action="Index">Paketler</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Egitmens" asp-action="Index">Eğitmenler</a></li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Randevus" asp-action="Index">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <span><i class="fa-solid fa-gear me-1"></i>Randevu Yönetim</span>
+                                    }
+                                    else
+                                    {
+                                        <span><i class="fa-regular fa-calendar-check me-1"></i>Randevularım</span>
+                                    }
+                                </a>
+                            </li>
+                        }
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Raporlar" asp-action="Index">Yönetici Raporları</a>
+                                <a class="nav-link" asp-controller="Raporlar" asp-action="Index">Raporlar</a>
                             </li>
                         }
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <div class="ms-lg-3">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container-fluid p-0">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - SalonYöneticisi - <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
+    <footer class="bg-dark text-white-50 py-4 mt-auto border-top border-secondary">
+        <div class="container text-center">
+            <div class="mb-3">
+                <a href="#" class="text-white-50 mx-2 hover-white"><i class="fa-brands fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white-50 mx-2 hover-white"><i class="fa-brands fa-twitter fa-lg"></i></a>
+                <a href="#" class="text-white-50 mx-2 hover-white"><i class="fa-brands fa-facebook fa-lg"></i></a>
+            </div>
+            <p class="mb-0 small">&copy; 2025 SalonYöneticisi. Güç ve Estetik.</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
