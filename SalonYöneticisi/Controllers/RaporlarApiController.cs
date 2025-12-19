@@ -24,13 +24,12 @@ namespace GymManagementApp.Controllers
         [HttpGet("EgitmenPerformans")]
         public async Task<IActionResult> GetEgitmenPerformans(DateTime? baslangic, DateTime? bitis)
         {
-            //Sorgu Taslağı
             IQueryable<Randevu> sorgu = _context.Randevular
                 .Include(r => r.HizmetPaketi)
                 .Include(r => r.Egitmen)
-                .Where(r => r.Durum != RandevuDurumu.Iptal); // İptaller hariç
+                .Where(r => r.Durum != RandevuDurumu.Iptal);
 
-            //Filtreleme (LINQ Where)
+            //Linq Filtreleme
             if (baslangic.HasValue)
             {
                 sorgu = sorgu.Where(r => r.Tarih >= baslangic.Value);
@@ -42,7 +41,6 @@ namespace GymManagementApp.Controllers
             }
 
             //Veri Çekme
-
             var raporListesi = await sorgu
                 .GroupBy(r => r.Egitmen.AdSoyad)
                 .Select(g => new

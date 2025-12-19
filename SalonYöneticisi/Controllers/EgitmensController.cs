@@ -19,17 +19,16 @@ namespace GymManagementApp.Controllers
         {
             var saatler = new List<SelectListItem>();
 
-            // Sabah 8'den Akşam 22'ye kadar (İstersen sayıları değiştirebilirsin)
+            // 08-22 
             for (int i = 8; i <= 22; i++)
             {
                 saatler.Add(new SelectListItem
                 {
-                    Text = $"{i}:00", // Ekranda görünecek (09:00)
-                    Value = i.ToString() // Veritabanına gidecek (9)
+                    Text = $"{i}:00", 
+                    Value = i.ToString()
                 });
             }
 
-            // Bu listeyi View'a taşıması için ViewBag'e atıyoruz
             ViewBag.Saatler = new SelectList(saatler, "Value", "Text");
         }
 
@@ -41,8 +40,6 @@ namespace GymManagementApp.Controllers
         // GET: Egitmens
         public async Task<IActionResult> Index()
         {
-            // DÜZELTME: Eskiden Salon include ediyorduk, sildik.
-            // Ayrıca değişken ismi hatası giderildi.
             return View(await _context.Egitmenler.ToListAsync());
         }
 
@@ -75,7 +72,6 @@ namespace GymManagementApp.Controllers
         // POST: Egitmens/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // DÜZELTME: SalonId silindi, yerine BaslamaSaati ve BitisSaati eklendi.
         public async Task<IActionResult> Create([Bind("Id,AdSoyad,UzmanlikAlani,BaslamaSaati,BitisSaati")] Egitmen egitmen)
         {
             if (ModelState.IsValid)
@@ -84,7 +80,6 @@ namespace GymManagementApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            // DÜZELTME: Hata olursa geri dönerken salon listesi doldurmaya gerek yok.
             return View(egitmen);
         }
 
@@ -109,7 +104,6 @@ namespace GymManagementApp.Controllers
         // POST: Egitmens/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // DÜZELTME: SalonId silindi, Saatler eklendi.
         public async Task<IActionResult> Edit(int id, [Bind("Id,AdSoyad,UzmanlikAlani,BaslamaSaati,BitisSaati")] Egitmen egitmen)
         {
             if (id != egitmen.Id)
@@ -164,20 +158,16 @@ namespace GymManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // 1. KONTROL: Bu eğitmene bağlı hizmet paketi var mı?
+            // egitmenin paketi var mi
             bool paketiVarMi = await _context.HizmetPaketleri.AnyAsync(h => h.EgitmenId == id);
 
             if (paketiVarMi)
             {
-                // Eğer paketi varsa, silme! Kullanıcıya hata mesajı hazırla.
                 ViewBag.HataMesaji = "Bu eğitmen şu anda bir veya daha fazla hizmet paketinden sorumlu olduğu için silinemez. Lütfen önce ilgili hizmet paketlerini başka bir eğitmene atayın veya silin.";
-
-                // Eğitmen bilgilerini tekrar çekip sayfayı yeniden gösteriyoruz
                 var egitmen = await _context.Egitmenler.FindAsync(id);
                 return View(egitmen);
             }
 
-            // 2. Engel yoksa silme işlemine devam et
             var egitmenSilinecek = await _context.Egitmenler.FindAsync(id);
             if (egitmenSilinecek != null)
             {

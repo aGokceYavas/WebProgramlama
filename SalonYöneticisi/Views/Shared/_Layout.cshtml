@@ -8,24 +8,20 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/GymManagementApp.styles.css" asp-append-version="true" />
 
     <style>
-        /* Varsayılan Header Davranışı: Yer kaplar (Relative) */
         header {
             position: relative;
             z-index: 1000;
             width: 100%;
         }
 
-            /* SADECE Anasayfa için Overlay (Üstüne Binme) Modu */
             header.header-overlay {
                 position: absolute;
                 top: 0;
                 left: 0;
             }
 
-        /* Glassmorphism Menü (Anasayfa İçin) */
         .navbar-glass {
             background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(5px);
@@ -34,13 +30,11 @@
             transition: all 0.3s ease;
         }
 
-        /* Koyu Zeminli Menü (Diğer Sayfalar İçin) */
         .navbar-dark-bg {
-            background: rgba(44, 62, 80, 1) !important; /* Mat koyu renk */
+            background: rgba(44, 62, 80, 1) !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* Link Tasarımları */
         .nav-link {
             color: rgba(255, 255, 255, 0.9) !important;
             font-weight: 600;
@@ -73,14 +67,13 @@
 <body class="d-flex flex-column min-vh-100">
 
     @{
-        // Sayfa Kontrolü
-        var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
-        ViewContext.RouteData.Values["action"]?.ToString() == "Index";
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+        var action = ViewContext.RouteData.Values["action"]?.ToString();
 
-        // Anasayfa ise 'header-overlay' sınıfını ekle (Absolute), değilse boş bırak (Relative)
+        var isHomePage = (controller == "Home" && action == "Index");
+
         var headerClass = isHomePage ? "header-overlay" : "";
 
-        // Anasayfa ise şeffaf menü, değilse koyu zeminli menü
         var navbarClass = isHomePage ? "navbar-glass" : "navbar-dark-bg";
     }
 
@@ -101,6 +94,13 @@
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Anasayfa</a></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="YapayZeka" asp-action="Index">
+                                <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i>Akıllı Antrenör
+                            </a>
+                        </li>
+
                         <li class="nav-item"><a class="nav-link" asp-controller="HizmetPaketis" asp-action="Index">Paketler</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Egitmens" asp-action="Index">Eğitmenler</a></li>
 

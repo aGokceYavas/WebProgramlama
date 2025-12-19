@@ -15,12 +15,12 @@ namespace GymManagementApp.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Hizmet Paketi - Eğitmen İlişkisi (CASCADE DELETE İPTAL EDİYORUZ)
+            // HizmetPaketi ile Egitmen arasındaki ilişkiyi yapılandır
             modelBuilder.Entity<HizmetPaketi>()
                 .HasOne(h => h.Egitmen)
-                .WithMany() // Eğitmenin içinde 'HizmetPaketleri' listesi tanımlamadıysan boş bırak
+                .WithMany() 
                 .HasForeignKey(h => h.EgitmenId)
-                .OnDelete(DeleteBehavior.Restrict); // <--- SİHİRLİ KOD BURASI (Cascade yerine Restrict)
+                .OnDelete(DeleteBehavior.Restrict);
         }
         public DbSet<Egitmen> Egitmenler { get; set; }
         public DbSet<HizmetPaketi> HizmetPaketleri { get; set; }

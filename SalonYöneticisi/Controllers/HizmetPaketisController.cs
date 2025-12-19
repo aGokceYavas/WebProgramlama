@@ -24,7 +24,6 @@ namespace GymManagementApp.Controllers
         // GET: HizmetPaketis
         public async Task<IActionResult> Index()
         {
-            // Eğitmen bilgisini de çekiyoruz ki listede adı görünsün
             var sporSalonuContext = _context.HizmetPaketleri.Include(h => h.Egitmen);
             return View(await sporSalonuContext.ToListAsync());
         }
@@ -35,7 +34,7 @@ namespace GymManagementApp.Controllers
             if (id == null) return NotFound();
 
             var hizmetPaketi = await _context.HizmetPaketleri
-                .Include(h => h.Egitmen) // Detayda da hoca görünsün
+                .Include(h => h.Egitmen)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (hizmetPaketi == null) return NotFound();
@@ -55,10 +54,8 @@ namespace GymManagementApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        // Bind içine 'EgitmenId' ve 'Aciklama' eklendi
         public async Task<IActionResult> Create([Bind("Id,Ad,Sure,Ucret,Aciklama,EgitmenId")] HizmetPaketi hizmetPaketi)
         {
-            // EK GÜVENLİK: Süre 30, 60, 90, 120 olabilir
             var gecerliSureler = new[] { 30, 60, 90, 120 };
             if (!gecerliSureler.Contains(hizmetPaketi.Sure))
             {
@@ -72,7 +69,6 @@ namespace GymManagementApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Hata varsa listeyi tekrar doldur
             EgitmenListesiHazirla(hizmetPaketi.EgitmenId);
             return View(hizmetPaketi);
         }
@@ -98,7 +94,6 @@ namespace GymManagementApp.Controllers
         {
             if (id != hizmetPaketi.Id) return NotFound();
 
-            // EK GÜVENLİK: Süre kontrolü
             var gecerliSureler = new[] { 30, 60, 90, 120 };
             if (!gecerliSureler.Contains(hizmetPaketi.Sure))
             {
@@ -160,13 +155,12 @@ namespace GymManagementApp.Controllers
             return _context.HizmetPaketleri.Any(e => e.Id == id);
         }
 
-        // Yardımcı Metot: Dropdown Listesini Hazırlar
+        // Eğitmen listesini hazırlayan yardımcı metot
         private void EgitmenListesiHazirla(int? seciliId = null)
         {
             var egitmenQuery = _context.Egitmenler.Select(e => new
             {
                 Id = e.Id,
-                // Görünen İsim: Ahmet Yılmaz (Pilates)
                 Gorunum = e.AdSoyad + " (" + e.UzmanlikAlani + ")"
             });
 

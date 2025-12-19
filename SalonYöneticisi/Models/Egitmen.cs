@@ -18,10 +18,10 @@ namespace GymManagementApp.Models
 
         [Display(Name = "Mesai Başlangıç Saati")]
         [Range(0, 23)]
-        public int BaslamaSaati { get; set; } = 9; // Varsayılan sabah 9
+        public int BaslamaSaati { get; set; } = 9; 
 
         [Display(Name = "Mesai Bitiş Saati")]
         [Range(0, 23)]
-        public int BitisSaati { get; set; } = 18; // Varsayılan akşam 6
+        public int BitisSaati { get; set; } = 18; 
     }
 }

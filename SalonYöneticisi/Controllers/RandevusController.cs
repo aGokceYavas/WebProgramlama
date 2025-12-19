@@ -9,7 +9,7 @@ using GymManagementApp.Data;
 using GymManagementApp.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
+namespace GymManagementApp.Controllers
 {
     [Authorize]
     public class RandevusController : Controller
@@ -24,6 +24,22 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
         // GET: Randevus
         public async Task<IActionResult> Index()
         {
+            // Geçmiş randevuları tamamlandı olarak işaretleme
+            var gecmisRandevular = await _context.Randevular
+                .Where(r => r.Tarih < DateTime.Today &&
+                           (r.Durum == RandevuDurumu.OnayBekliyor || r.Durum == RandevuDurumu.Onaylandi))
+                .ToListAsync();
+
+            if (gecmisRandevular.Any())
+            {
+                foreach (var randevu in gecmisRandevular)
+                {
+                    randevu.Durum = RandevuDurumu.Tamamlandi;
+                }
+                // güncellemeleri kaydet
+                await _context.SaveChangesAsync();
+            }
+
             var randevular = _context.Randevular
                 .Include(r => r.Egitmen)
                 .Include(r => r.HizmetPaketi)
@@ -36,16 +52,20 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
                 randevular = randevular.Where(r => r.Uye.Email == userEmail);
             }
 
-            return View(await randevular.ToListAsync());
+            return View(await randevular.OrderByDescending(r => r.Tarih).ThenBy(r => r.Saat).ToListAsync());
         }
-        public async Task<IActionResult> Create(int? paketId, int haftaOffset = 0)
+
+        public async Task<IActionResult> Create(int? paketId, int haftaOffset = 0, string hata = null)
         {
-            // 1. Paketleri Çek (Dropdown)
+            if (!string.IsNullOrEmpty(hata) && hata == "dolu")
+            {
+                ModelState.AddModelError("", "Üzgünüz, seçtiğiniz saat sizden hemen önce başkası tarafından alındı. Lütfen sayfayı yenileyip başka bir saat seçin.");
+            }
+
             var paketler = await _context.HizmetPaketleri
-                .Include(h => h.Egitmen) 
+                .Include(h => h.Egitmen)
                 .ToListAsync();
 
-            // ViewModel
             var model = new RandevuAlViewModel
             {
                 Paketler = paketler,
@@ -57,32 +77,26 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
                 model.Uyeler = await _context.Users.ToListAsync();
             }
 
-            // Eğer kullanıcı bir paket seçtiyse hesaplamalara başla
             if (paketId.HasValue)
             {
                 var seciliPaket = paketler.FirstOrDefault(p => p.Id == paketId);
 
-                // Paket ve Hocası geçerli mi?
                 if (seciliPaket != null && seciliPaket.Egitmen != null)
                 {
                     model.SeciliPaket = seciliPaket;
                     model.Egitmen = seciliPaket.Egitmen;
 
-                    // A) Tarih Ayarları
                     DateTime bugun = DateTime.Today;
                     int bugunIndex = (int)bugun.DayOfWeek;
-                    // Pazar(0) ise -6 gün git, diğerleri için (1-bugunIndex) kadar git
                     int pazartesiFarki = bugunIndex == 0 ? -6 : 1 - bugunIndex;
 
                     DateTime buHaftaBasi = bugun.AddDays(pazartesiFarki).AddDays(haftaOffset * 7);
                     model.BaslangicTarihi = buHaftaBasi;
 
-                    // B) Saat Dilimlerini Oluştur (30 dk aralıklarla)
                     var saatDilimleri = new List<TimeSpan>();
                     TimeSpan baslangic = new TimeSpan(seciliPaket.Egitmen.BaslamaSaati, 0, 0);
                     TimeSpan bitis = new TimeSpan(seciliPaket.Egitmen.BitisSaati, 0, 0);
 
-                    // Döngü: Mesai bitene kadar 30 dk ekle
                     while (baslangic < bitis)
                     {
                         saatDilimleri.Add(baslangic);
@@ -90,7 +104,6 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
                     }
                     model.SaatDilimleri = saatDilimleri;
 
-                    // C) Dolu Randevuları İşaretle
                     var randevular = await _context.Randevular
                         .Include(r => r.HizmetPaketi)
                         .Where(r => r.EgitmenId == seciliPaket.EgitmenId
@@ -101,17 +114,17 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
 
                     foreach (var r in randevular)
                     {
-                        // Paket süresine göre kaç slot dolu olacak hesapla
                         int sure = r.HizmetPaketi?.Sure ?? 30;
                         int slotSayisi = sure / 30;
 
-                        TimeSpan rSaat = TimeSpan.Parse(r.Saat.ToString());
-                        for (int i = 0; i < slotSayisi; i++)
+                        if (TimeSpan.TryParse(r.Saat, out TimeSpan rSaat))
                         {
-                            // "2025-12-16_10:30" formatında anahtar oluştur
-                            string key = $"{r.Tarih:yyyy-MM-dd}_{rSaat:hh\\:mm}";
-                            model.DoluSlotlar.Add(key);
-                            rSaat = rSaat.Add(TimeSpan.FromMinutes(30)); 
+                            for (int i = 0; i < slotSayisi; i++)
+                            {
+                                string key = $"{r.Tarih:yyyy-MM-dd}_{rSaat:hh\\:mm}";
+                                model.DoluSlotlar.Add(key);
+                                rSaat = rSaat.Add(TimeSpan.FromMinutes(30));
+                            }
                         }
                     }
                 }
@@ -120,7 +133,6 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             return View(model);
         }
 
-        // GET: Randevus/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -136,7 +148,6 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             if (!User.IsInRole("Admin"))
             {
                 var currentUserEmail = User.Identity?.Name;
-                // Eğer randevunun sahibi (Uye) yüklendiyse Email kontrolü yap, değilse hata verme
                 if (randevu.Uye != null && randevu.Uye.Email != currentUserEmail)
                 {
                     return Unauthorized();
@@ -146,7 +157,6 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             return View(randevu);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Randevu randevu)
@@ -155,23 +165,34 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
 
             if (!adminBaskasinaAliyor)
             {
-                // Admin üye seçmediyse veya normal kullanıcıysa -> Kendisi adına al
                 var userEmail = User.Identity?.Name;
                 var uye = _context.Users.FirstOrDefault(u => u.Email == userEmail);
                 if (uye != null) randevu.UyeId = uye.Id;
             }
 
-            // 2. Eğitmen Bilgisi 
             var paket = await _context.HizmetPaketleri.FindAsync(randevu.HizmetPaketiId);
             if (paket != null)
             {
                 randevu.EgitmenId = paket.EgitmenId;
             }
+            else
+            {
+                return RedirectToAction("Create");
+            }
 
-            // 3. Durum
+            bool cakismaVarMi = _context.Randevular.Any(r =>
+                r.EgitmenId == randevu.EgitmenId &&
+                r.Tarih == randevu.Tarih &&
+                r.Saat == randevu.Saat &&
+                r.Durum != RandevuDurumu.Iptal);
+
+            if (cakismaVarMi)
+            {
+                return RedirectToAction("Create", new { paketId = randevu.HizmetPaketiId, hata = "dolu" });
+            }
+
             randevu.Durum = RandevuDurumu.OnayBekliyor;
 
-            // 4. Zorunlu olmayan validasyonları temizle (Çünkü biz arka planda doldurduk)
             ModelState.Remove("UyeId");
             ModelState.Remove("EgitmenId");
             ModelState.Remove("Uye");
@@ -185,11 +206,9 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
                 return RedirectToAction(nameof(Index));
             }
 
-            // Hata olursa tekrar Create sayfasına (Paket seçili halde) gönder
             return RedirectToAction("Create", new { paketId = randevu.HizmetPaketiId });
         }
 
-        // GET: Randevus/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -205,12 +224,15 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             return View(randevu);
         }
 
-        // POST: Randevus/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Randevu randevu)
         {
             if (id != randevu.Id) return NotFound();
+
+            ModelState.Remove("Uye");
+            ModelState.Remove("Egitmen");
+            ModelState.Remove("HizmetPaketi");
 
             if (ModelState.IsValid)
             {
@@ -226,10 +248,11 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["EgitmenId"] = new SelectList(_context.Egitmenler, "Id", "AdSoyad", randevu.EgitmenId);
+            ViewData["HizmetPaketiId"] = new SelectList(_context.HizmetPaketleri, "Id", "Ad", randevu.HizmetPaketiId);
             return View(randevu);
         }
 
-        // GET: Randevus/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -247,7 +270,6 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             return View(randevu);
         }
 
-        // POST: Randevus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -255,6 +277,25 @@ namespace GymManagementApp.Controllers // Namespace'ini projene göre düzelttim
             var randevu = await _context.Randevular.FindAsync(id);
             if (randevu != null) _context.Randevular.Remove(randevu);
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IptalEt(int id)
+        {
+            var randevu = await _context.Randevular.Include(r => r.Uye).FirstOrDefaultAsync(x => x.Id == id);
+            if (randevu == null) return NotFound();
+
+            if (!User.IsInRole("Admin") && randevu.Uye.Email != User.Identity?.Name)
+            {
+                return Unauthorized();
+            }
+
+            randevu.Durum = RandevuDurumu.Iptal;
+            _context.Update(randevu);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -24,10 +24,9 @@ builder.Services.AddIdentity<Uye, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
 
-// email servisi hatasini cozmek icin:
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-// login & register sayfalari icin
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
