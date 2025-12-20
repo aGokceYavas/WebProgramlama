@@ -1,64 +1,133 @@
-SPOR SALONU YÖNETİM VE RANDEVU SİSTEMİ PROJE DOKÜMANTASYONU
+#  Spor Salonu Yönetim ve Randevu Sistemi
 
+Bu proje, **Sakarya Üniversitesi Bilgisayar Mühendisliği Bölümü – Web Programlama** dersi kapsamında geliştirilmiştir.  
+ASP.NET Core MVC mimarisi kullanılarak geliştirilen sistem; spor salonlarındaki üye, eğitmen, hizmet paketi ve randevu süreçlerini dijital ortama taşımayı amaçlar.
 
-1. PROJE TANIMI Bu proje, Sakarya Üniversitesi Bilgisayar Mühendisliği Bölümü Web Programlama dersi projesi olarak hazırlanmıştır. Geliştirilen "Spor Salonu Yönetim Sistemi", bir spor işletmesindeki üye, eğitmen, hizmet paketi ve randevu süreçlerini dijitalleştirmeyi amaçlar. ASP.NET Core MVC mimarisi üzerine kurulu olan sistem, sadece veri kaydetmekle kalmayıp, yapay zeka entegrasyonu ile üyelere kişisel antrenörlük hizmeti sunmaktadır.
+Sistem, klasik yönetim fonksiyonlarının yanı sıra **yapay zeka destekli kişisel antrenör** özelliğiyle öne çıkmaktadır.
 
+---
 
+##  Projenin Öne Çıkan Özellikleri
 
-2. SİSTEMİN ÖNE ÇIKAN ÖZELLİKLERİ Proje, kullanıcı deneyimini ve veri bütünlüğünü sağlamak adına aşağıdaki gelişmiş teknik özellikleri barındırır:
+-  **Yapay Zeka Destekli Antrenör**
+  - Google **Gemini 2.0 Flash** modeli kullanılmıştır.
+  - Üyeler yaş, boy, kilo, cinsiyet ve hedef bilgilerini girerek
+    kişiye özel **haftalık antrenman ve beslenme programı** alabilir.
 
-Yapay Zeka Destekli Antrenör (AI Integration): Sistemde Google Gemini 2.0 Flash modeli kullanılmıştır. Üyeler; yaş, boy, kilo, cinsiyet ve hedeflerini girdiklerinde, sistem yapay zeka servisine bağlanarak kişiye özel haftalık antrenman ve beslenme programı oluşturur.
+-  **Akıllı Randevu Yönetimi (Çakışma Kontrolü)**
+  - Aynı saat dilimine birden fazla randevu alınması engellenir.
+  - Dolu saatler için kullanıcı uyarılır ve kayıt yapılmaz.
 
-Akıllı Randevu Yönetimi ve Çakışma Kontrolü: Sistem, aynı saat dilimine birden fazla randevu alınmasını engelleyen bir "Çakışma Kontrolü" (Conflict Detection) mekanizmasına sahiptir. Bir üye randevu almaya çalışırken, o saat başkası tarafından dolmuşsa sistem uyarı verir ve kaydı engeller.
+-  **Otomatik Randevu Durum Güncelleme**
+  - Süresi geçen randevular otomatik olarak **“Tamamlandı”** durumuna alınır.
 
-Otomatik Durum Güncelleme: Uygulama her çalıştırıldığında veya ana sayfaya girildiğinde, arka planda çalışan bir algoritma tarihi geçmiş randevuları tespit eder ve statülerini otomatik olarak "Tamamlandı" olarak günceller.
+-  **REST API & Raporlama**
+  - Eğitmen performansları ve randevu yoğunlukları
+    özel bir REST API üzerinden JSON formatında sunulur.
 
-REST API ve Raporlama: Eğitmenlerin performansını ölçmek ve randevu yoğunluklarını analiz etmek için özel bir REST API geliştirilmiştir. Bu API, veritabanından çekilen verileri LINQ sorguları ile filtreleyerek JSON formatında sunar.
+-  **Rol Bazlı Yetkilendirme**
+  - **Admin** ve **Üye** olmak üzere iki farklı kullanıcı rolü bulunmaktadır.
+  - Yönetim panelleri sadece yetkili kullanıcılar tarafından erişilebilir.
 
-Yetkilendirme: Sistemde Admin ve Üye olmak üzere iki farklı rol mevcuttur. Yönetim panellerine sadece yetkili girişler yapılabilir.
+---
 
+##  Kullanılan Teknolojiler
 
+| Katman | Teknoloji |
+|------|---------|
+| Backend | C#, ASP.NET Core 8.0 MVC |
+| Veritabanı | SQL Server, Entity Framework Core (Code First) |
+| Frontend | HTML5, CSS3, JavaScript, Bootstrap 5 |
+| Versiyon Kontrol | Git, GitHub |
+| IDE | Visual Studio |
 
-3. TEKNİK ALTYAPI Projede kullanılan temel teknolojiler şunlardır:
+---
 
-Yazılım Dili ve Çatı: C#, ASP.NET Core 8.0 MVC
+##  Kurulum ve Çalıştırma
 
-Veritabanı: SQL Server, Entity Framework Core (Code First)
+Aşağıdaki adımları sırasıyla uygulayarak projeyi bilgisayarınızda çalıştırabilirsiniz.
 
-Arayüz Tasarımı: HTML5, CSS3, JavaScript, Bootstrap 5
+### 1️ Projenin İndirilmesi
 
-Versiyon Kontrol: Git ve GitHub
+GitHub deposunu bilgisayarınıza klonlayın:
 
+```bash
+git clone https://github.com/aGokceYavas/WebProgramlama.git
+```
 
+veya  
+GitHub sayfasındaki **Code → Download ZIP** seçeneğini kullanabilirsiniz.
 
-4. KURULUM VE ÇALIŞTIRMA ADIMLARI Projeyi bilgisayarınıza kurmak ve hatasız çalıştırmak için lütfen aşağıdaki adımları sırasıyla uygulayınız:
+---
 
-Adım 1: Projenin İndirilmesi GitHub deposunda yer alan proje dosyalarını "Code" butonuna basıp "Download ZIP" diyerek indirin veya Git komutu ile bilgisayarınıza klonlayın.
+### 2️ Veritabanının Oluşturulması (Migration)
 
-Adım 2: Veritabanının Oluşturulması (Migration) Proje "Code First" yaklaşımı ile yazıldığı için veritabanı tabloları kod üzerinden oluşturulmalıdır.
+Proje **Entity Framework Core – Code First** yaklaşımıyla geliştirilmiştir.
 
-Projeyi Visual Studio ile açın.
+1. Projeyi **Visual Studio** ile açın  
+2. Üst menüden aşağıdaki yolu izleyin:
 
-Üst menüden "Tools" > "NuGet Package Manager" > "Package Manager Console" yolunu izleyin.
+```
+Tools → NuGet Package Manager → Package Manager Console
+```
 
-Açılan konsol ekranına "Update-Database" komutunu yazıp Enter tuşuna basın. Bu işlem, gerekli veritabanını ve tabloları SQL Server üzerinde otomatik olarak oluşturacaktır.
+3. Açılan konsolda aşağıdaki komutu çalıştırın:
 
-Adım 3: API Anahtarı Kontrolü Yapay zeka modülünün çalışması için Google API anahtarı sisteme tanımlanmıştır. Controllers klasörü altındaki "YapayZekaController.cs" dosyasında API anahtarının tanımlı olduğu görülebilir. Herhangi bir işlem yapılmasına gerek yoktur, ancak kendi anahtarınızı kullanmak isterseniz bu alandan değiştirebilirsiniz.
+```powershell
+Update-Database
+```
 
-Adım 4: Projenin Başlatılması Visual Studio üzerindeki "IIS Express" veya yeşil başlat butonuna basarak projeyi tarayıcıda çalıştırabilirsiniz.
+Bu işlem SQL Server üzerinde gerekli veritabanı ve tabloları otomatik olarak oluşturacaktır.
 
+---
 
+### 3️ Yapay Zeka API Anahtarı
 
-5. SİSTEME GİRİŞ BİLGİLERİ Proje ilk kez çalıştırıldığında, veritabanına otomatik olarak bir yönetici (Admin) hesabı tanımlanır. Yönetici paneline erişmek için aşağıdaki bilgileri kullanabilirsiniz:
+- Google Gemini API anahtarı projeye tanımlıdır.
+- API anahtarı şu dosyada yer almaktadır:
 
-Admin E-Posta: b221210371@sakarya.edu.tr
+```
+Controllers/YapayZekaController.cs
+```
 
-Admin Şifre: sau
+> Kendi API anahtarınızı kullanmak isterseniz bu dosya üzerinden değiştirebilirsiniz.
 
-Not: Normal üye girişi yapmak veya sistemi test etmek için, giriş ekranındaki "Kayıt Ol" butonunu kullanarak yeni bir üyelik oluşturabilirsiniz.
+---
 
+### 4️ Projenin Çalıştırılması
 
+Visual Studio üzerinden:
 
-6. GELİŞTİRİCİ BİLGİLERİ Adı Soyadı: Aybüke Gökçe Yavaş 
-Öğrenci Numarası: B221210371 Bölüm: 
-Bilgisayar Mühendisliği
+- **IIS Express**
+- veya **yeşil Başlat (Run) butonu**
+
+kullanılarak proje tarayıcıda çalıştırılabilir.
+
+---
+
+##  Varsayılan Giriş Bilgileri
+
+Proje ilk çalıştırıldığında sisteme otomatik olarak bir **Admin** hesabı eklenir.
+
+**Admin Girişi**
+-  E-posta: `b221210371@sakarya.edu.tr`
+- Şifre: `sau`
+
+>  Normal kullanıcı olarak sistemi test etmek için giriş ekranındaki **Kayıt Ol** butonunu kullanabilirsiniz.
+
+---
+
+##  Geliştirici Bilgileri
+
+- **Ad Soyad:** Aybüke Gökçe Yavaş  
+- **Öğrenci Numarası:** B221210371  
+- **Bölüm:** Bilgisayar Mühendisliği  
+- **Geliştirme Ortamı:** Visual Studio  
+
+---
+
+##  Notlar
+
+- Proje akademik amaçlı geliştirilmiştir.
+- Kod yapısı ASP.NET Core MVC standartlarına uygundur.
+- Genişletilebilir ve modüler mimariye sahiptir.

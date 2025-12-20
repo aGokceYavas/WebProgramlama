@@ -1,140 +1,138 @@
 ﻿@{
     ViewData["Title"] = "Akıllı Antrenör";
+    string aktifSekme = ViewBag.AktifSekme as string ?? "program";
 }
 
 <div class="container py-5">
-
-    <div class="text-center mb-5">
-        <h2 class="fw-bold display-6">Akıllı Antrenör</h2>
-        <p class="text-muted">Yapay zeka ile kişisel programınızı oluşturun.</p>
+    
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Akıllı Antrenör</h2>
     </div>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (ViewBag.Hata != null)
     {
+        <div class="alert alert-danger text-center">@ViewBag.Hata</div>
+    }
+
+    <ul class="nav nav-pills mb-4 justify-content-center" id="anaTablar">
+        <li class="nav-item"><button class="nav-link @(aktifSekme == "program" ? "active" : "")" onclick="sekmeAc('program')">Haftalık Program</button></li>
+        <li class="nav-item"><button class="nav-link @(aktifSekme == "yemek" ? "active" : "")" onclick="sekmeAc('yemek')">Yemek Analizi</button></li>
+    </ul>
+
+    <div id="alan-program" style="display: @(aktifSekme == "program" ? "block" : "none")">
         <div class="row g-5">
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-header bg-primary text-white p-3">
-                        <h5 class="mb-0"><i class="fa-solid fa-sliders me-2"></i>Bilgileriniz</h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <form asp-action="ProgramOlustur" method="post" id="aiForm">
-                            <div class="mb-3">
-                                <label class="form-label">Yaş</label>
-                                <input type="number" name="yas" class="form-control" value="@ViewBag.Yas" required placeholder="Örn: 24" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Kilo (kg)</label>
-                                <input type="number" name="kilo" class="form-control" value="@ViewBag.Kilo" required placeholder="Örn: 80" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Boy (cm)</label>
-                                <input type="number" name="boy" class="form-control" value="@ViewBag.Boy" required placeholder="Örn: 180" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Cinsiyet</label>
-                                <select name="cinsiyet" class="form-select">
-                                    <option value="Erkek">Erkek</option>
-                                    <option value="Kadın">Kadın</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Hedefiniz</label>
-                                <select name="hedef" class="form-select">
-                                    <option value="Kilo Vermek">Kilo Vermek</option>
-                                    <option value="Kas Yapmak">Kas Yapmak</option>
-                                    <option value="Kondisyon Arttırmak">Kondisyon Arttırmak</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill" onclick="loadingAc()">
-                                <i class="fa-solid fa-bolt me-2"></i>Programı Oluştur
-                            </button>
-                        </form>
-                    </div>
+            <div class="col-md-4">
+                <div class="card p-4 shadow-sm border-0">
+                    <form asp-action="ProgramOlustur" method="post">
+                        <div class="mb-2"><label>Yaş</label><input type="number" name="yas" class="form-control" value="@ViewBag.Yas" required /></div>
+                        <div class="mb-2"><label>Kilo</label><input type="number" name="kilo" class="form-control" value="@ViewBag.Kilo" required /></div>
+                        <div class="mb-2"><label>Boy</label><input type="number" name="boy" class="form-control" value="@ViewBag.Boy" required /></div>
+                        <div class="mb-2"><label>Cinsiyet</label><select name="cinsiyet" class="form-select"><option>Erkek</option><option>Kadın</option></select></div>
+                        <div class="mb-3"><label>Hedef</label><select name="hedef" class="form-select"><option>Kilo Vermek</option><option>Kas Yapmak</option></select></div>
+                        <button class="btn btn-primary w-100" onclick="loading('load1')">Oluştur</button>
+                    </form>
                 </div>
             </div>
+            <div class="col-md-8">
+                <div id="load1" style="display:none;" class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                @if (ViewBag.Sonuc != null && aktifSekme == "program")
+                {
+                    <div class="card p-4 shadow border-0">@Html.Raw(ViewBag.Sonuc)</div>
+                }
+            </div>
+        </div>
+    </div>
 
-            <div class="col-lg-8">
-                <div class="card h-100 border-0 shadow-sm bg-light">
-                    <div class="card-body p-5">
+    <div id="alan-yemek" style="display: @(aktifSekme == "yemek" ? "block" : "none")">
+        <div class="text-center mb-4">
+            <div class="card d-inline-block p-4 shadow border-0">
+                <h5>Healthy Swap</h5>
+                <form asp-action="YemekAnalizi" method="post" enctype="multipart/form-data" class="d-flex gap-2 justify-content-center mt-3">
+                    <input type="file" name="resimDosyasi" class="form-control" accept="image/*" required />
+                    <button type="submit" class="btn btn-success" onclick="loading('load2')">Analiz Et</button>
+                </form>
+            </div>
+        </div>
 
-                        <div id="loadingDiv" style="display:none; text-align:center; padding: 50px;">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <h5 class="mt-3">Yapay Zeka Düşünüyor...</h5>
-                            <small>Sizin için en uygun program hazırlanıyor.</small>
+        <div id="load2" style="display:none;" class="text-center p-5"><div class="spinner-border text-success"></div><p>Analiz ediliyor...</p></div>
+
+        @if (ViewBag.YuklenenResim != null)
+        {
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-danger text-white text-center">Yediğin</div>
+                        <div class="card-body p-0"><img src="@ViewBag.YuklenenResim" class="w-100" style="height:300px; object-fit:cover;" /></div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm h-100 border-success">
+                        <div class="card-header bg-success text-white text-center">Önerilen</div>
+                        <div class="card-body p-0 d-flex align-items-center justify-content-center bg-light">
+                            @if(!string.IsNullOrEmpty(ViewBag.UretilenResim))
+                            {
+                                <img src="@ViewBag.UretilenResim" class="w-100" style="height:300px; object-fit:cover;" onerror="this.src='https://placehold.co/600x400?text=Resim+Yuklenemedi'; this.onerror=null;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">Resim oluşturulamadı.</span>
+                            }
                         </div>
-
-                        @if (ViewBag.Sonuc == null && ViewBag.Hata == null)
-                        {
-                            <div id="baslangicMsg" class="text-center text-muted py-5">
-                                <i class="fa-solid fa-robot fa-3x mb-3"></i>
-                                <h4>Hazır mısınız?</h4>
-                                <p>Soldaki formu doldurun ve yapay zekanın sihrini izleyin.</p>
-                            </div>
-                        }
-
-                        @if (ViewBag.Hata != null)
-                        {
-                            <div class="alert alert-danger">@ViewBag.Hata</div>
-                        }
-
-                        @if (ViewBag.Sonuc != null)
-                        {
-                            <div class="sonuc-kutusu">
-                                <h3 class="text-success mb-4"><i class="fa-solid fa-check-circle me-2"></i>Programınız Hazır!</h3>
-                                <hr />
-                                <div class="ai-content">
-                                    @Html.Raw(ViewBag.Sonuc)
-                                </div>
-                            </div>
-                        }
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
 
-        <div class="alert alert-warning text-center p-5 rounded-4 shadow-sm">
-            <i class="fa-solid fa-lock fa-3x mb-3"></i>
-            <h3>Üyelere Özel Alan</h3>
-            <p>Bu özelliği kullanmak için lütfen giriş yapın.</p>
-            <a href="/Identity/Account/Login" class="btn btn-dark mt-3 px-4 rounded-pill">Giriş Yap</a>
-        </div>
-    }
+            @if(ViewBag.YemekAciklamasi != null)
+            {
+                <div class="card p-4 shadow-sm border-success mt-3">@Html.Raw(ViewBag.YemekAciklamasi)</div>
+            }
+        }
+    </div>
 </div>
 
 <script>
-    function loadingAc() {
-        if (document.querySelector('form').checkValidity()) {
-            document.getElementById('baslangicMsg').style.display = 'none';
-            document.querySelector('.sonuc-kutusu')?.remove(); 
-            document.getElementById('loadingDiv').style.display = 'block';
-        }
+    function sekmeAc(id) {
+        document.getElementById('alan-program').style.display = 'none';
+        document.getElementById('alan-yemek').style.display = 'none';
+        document.getElementById('alan-' + id).style.display = 'block';
+        document.querySelectorAll('#anaTablar .nav-link').forEach(b => b.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
+    function loading(id) { document.getElementById(id).style.display = 'block'; }
 </script>
 
 <style>
-    /* Yapay zekadan gelen listeleri biraz güzelleştirelim */
-    .ai-content ul {
-        list-style-type: none;
-        padding-left: 0;
+    .nav-pills .nav-link { background: #f8f9fa; color: #555; margin: 0 5px; cursor: pointer; }
+    .nav-pills .nav-link.active { background: #0d6efd; color: #fff; }
+    .nav-pills .nav-link.active[onclick*="yemek"] { background: #198754; }
+</style>
+
+<script>
+    function sekmeAc(id) {
+        document.getElementById('alan-program').style.display = 'none';
+        document.getElementById('alan-yemek').style.display = 'none';
+        document.getElementById('alan-' + id).style.display = 'block';
+        document.querySelectorAll('#anaTablar .nav-link').forEach(b => b.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+    function loading(id) { document.getElementById(id).style.display = 'block'; }
+</script>
+
+<style>
+    .nav-pills .nav-link {
+        background-color:  #198754;
+        color: #555;
+        margin: 0 5px;
+        cursor: pointer;
     }
 
-    .ai-content li {
-        background: #fff;
-        padding: 10px;
-        margin-bottom: 5px;
-        border-radius: 5px;
-        border-left: 4px solid #4ca1af;
-    }
+        .nav-pills .nav-link.active {
+            background: #0d6efd;
+            color: #1000;
+        }
 
-    .ai-content h3 {
-        font-size: 1.2rem;
-        margin-top: 20px;
-        color: #2c3e50;
-        font-weight: bold;
-    }
+            .nav-pills .nav-link.active[onclick*="yemek"] {
+                background: #0d6efd;
+            }
 </style>
